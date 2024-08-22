@@ -439,3 +439,221 @@
  *                   type: string
  *                   example: "User not found."
  */
+
+/**
+ * @swagger
+ * /api/v1/article:
+ *   get:
+ *     summary: Get all articles
+ *     tags: 
+ *       - Articles
+ *     description: Retrieve a list of all articles, with optional filters for category and keywords.
+ *     parameters:
+ *       - in: query
+ *         name: category
+ *         required: false
+ *         description: Filter articles by category
+ *         schema:
+ *           type: string
+ *           example: "technology"
+ *       - in: query
+ *         name: keywords
+ *         required: false
+ *         description: Filter articles by title or content keywords
+ *         schema:
+ *           type: string
+ *           example: "AI"
+ *       - in: query
+ *         name: size
+ *         required: false
+ *         description: Number of articles to return per page
+ *         schema:
+ *           type: integer
+ *           example: 10
+ *       - in: query
+ *         name: page
+ *         required: false
+ *         description: Page number for pagination
+ *         schema:
+ *           type: integer
+ *           example: 1
+ *     responses:
+ *       200:
+ *         description: A list of articles
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 articles:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Article'
+ *                 count:
+ *                   type: integer
+ *                   example: 100
+ */
+
+/**
+ * @swagger
+ * /api/v1/article:
+ *   post:
+ *     summary: Create a new article
+ *     tags: 
+ *       - Articles
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Article'
+ *     responses:
+ *       201:
+ *         description: Article created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Article'
+ */
+
+/**
+ * @swagger
+ * /api/v1/article/{id}:
+ *   get:
+ *     summary: Get an article by ID
+ *     tags: 
+ *       - Articles
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: The article ID
+ *         schema:
+ *           type: string
+ *           example: "60f6ad2d4f1a2b6c88fa54e5"
+ *     responses:
+ *       200:
+ *         description: The requested article
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Article'
+ *       404:
+ *         description: Article not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   example: "Article not found."
+ */
+
+/**
+ * @swagger
+ * /api/v1/article/{id}:
+ *   put:
+ *     summary: Update an article by ID
+ *     tags: 
+ *       - Articles
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: The article ID
+ *         schema:
+ *           type: string
+ *           example: "60f6ad2d4f1a2b6c88fa54e5"
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Article'
+ *     responses:
+ *       200:
+ *         description: Article updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Article'
+ *       404:
+ *         description: Article not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   example: "Article not found."
+ */
+
+/**
+ * @swagger
+ * /api/v1/article/{id}:
+ *   delete:
+ *     summary: Delete an article by ID
+ *     tags: 
+ *       - Articles
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: The article ID
+ *         schema:
+ *           type: string
+ *           example: "60f6ad2d4f1a2b6c88fa54e5"
+ *     responses:
+ *       200:
+ *         description: Article deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Article'
+ *       404:
+ *         description: Article not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   example: "Article not found."
+ */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Article:
+ *       type: object
+ *       properties:
+ *         title:
+ *           type: string
+ *           description: The title of the article
+ *           example: "Understanding AI"
+ *         content:
+ *           type: string
+ *           description: The content of the article
+ *           example: "This article explains the basics of AI..."
+ *         category:
+ *           type: string
+ *           description: The category of the article
+ *           example: "technology"
+ *         previewImg:
+ *           type: string
+ *           description: The previewImg of the article
+ *           example: "https://media.gqmagazine.fr/photos/606c19c3a813725515a80944/16:9/w_3360,h_1890,c_limit/mclarenarturaflux-11.jpeg"
+ */

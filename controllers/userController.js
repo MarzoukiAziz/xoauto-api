@@ -201,17 +201,3 @@ const softDeleteUser = asyncHandler(async (req, res, next) => {
 });
 
 module.exports = { registerUser, loginUser, generateAccessToken, changePassword, forgetPassword, resetPassword, softDeleteUser }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
