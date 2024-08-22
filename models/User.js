@@ -29,6 +29,12 @@ const userSchema = new Schema({
     type: Object,
     required: true,
   },
+  phone: { type: String, required: false },
+  avatar: { type: String, required: false },
+  pro: { type: Boolean, required: false },
+  email_verified: { type: Boolean, required: false },
+  phone_number_verified: { type: Boolean, required: false },
+  favoris: [{ type: String }],
   passwordResetToken: String,
   passwordResetExpires: Date,
 }, {
