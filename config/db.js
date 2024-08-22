@@ -18,10 +18,10 @@ const connectDB = async () => {
     try {
         // Disable strict query mode to allow more flexible queries
         await mongoose.set("strictQuery", false);
-	
+
         // Connect to the MongoDB database using the provided URL
         await mongoose.connect(connectionUrl);
-	console.log("CONNECTION SUCCESS")
+        console.log("CONNECTION SUCCESS")
         // Log a success message if the connection is successful
         console.log("Connection to the database successful");
     } catch (error) {
