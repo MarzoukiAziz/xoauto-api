@@ -24,7 +24,7 @@ const { generateTokens, generateAccessTokenFromRefreshToken } = require("../util
 
 // Controller for user registration
 const registerUser = asyncHandler(async (req, res, next) => {
-  const { name, email, password } = req.body;  // Extract user registration data from the request body
+  const { name, email, phone, password } = req.body;  // Extract user registration data from the request body
   let user = await User.findOne({ email });  // Check if a user with the provided email already exists
   if (user) return next(new ErrorResponse(userAlreadyExistsMessage, 409));
   const passwordHash = await bcrypt.hash(password, 10);  // Hash the password and generate a verification token
@@ -35,7 +35,12 @@ const registerUser = asyncHandler(async (req, res, next) => {
     password: passwordHash,
     roles: {
       USER: ROLES_LIST.USER//<YOUR_USER_ROLE_IDENTIFICATION (Can be any number or anything)>
-    }
+    },
+    phone,
+    pro: false,
+    email_verified: false,
+    phone_number_verified: false,
+    favorsi: []
   });
   user = await newUser.save();  // Save the user to the database
   res.status(201).json({

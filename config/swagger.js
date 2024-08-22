@@ -15,16 +15,21 @@
  *             required:
  *               - name
  *               - email
+ *               - phone
  *               - password
  *             properties:
  *               name:
  *                 type: string
  *                 description: The user's name.
- *                 example: John Doe
+ *                 example: User X
  *               email:
  *                 type: string
  *                 description: The user's email address.
- *                 example: johndoe@example.com
+ *                 example: user@gmail.com
+ *               phone:
+ *                 type: string
+ *                 description: The user's phone number.
+ *                 example: 0775214972
  *               password:
  *                 type: string
  *                 description: The user's password.
@@ -81,7 +86,7 @@
  *               email:
  *                 type: string
  *                 description: The user's email address.
- *                 example: johndoe@example.com
+ *                 example: user@gmail.com
  *               password:
  *                 type: string
  *                 description: The user's password.
