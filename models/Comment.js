@@ -9,7 +9,6 @@ const commentSchema = new Schema({
     articleId: {
         type: String,
         required: true
-
     },
     content: {
         type: String,
@@ -17,7 +16,6 @@ const commentSchema = new Schema({
     },
     answerTo: {
         type: String,
-        required: false
     },
 }, {
     timestamps: true,

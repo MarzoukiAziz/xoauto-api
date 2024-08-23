@@ -1,6 +1,4 @@
 const Article = require('../models/Article');
-const mongoose = require("mongoose");
-
 
 // Get all articles
 const getAllArticles = async (req, res, next) => {
@@ -84,7 +82,7 @@ const updateArticle = async (req, res, next) => {
         if (!article) {
             return res.status(404).json({ error: 'Article not found' });
         }
-        res.json(article);
+        res.status(200).json(article);
     } catch (error) {
         next(error);
     }

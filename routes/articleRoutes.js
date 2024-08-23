@@ -1,6 +1,5 @@
 const express = require("express");
 const { getAllArticles, getArticleById, createArticle, updateArticle, deleteArticle } = require('../controllers/articleController');
-const verifyUserToken = require("../middlewares/verifyUserToken")
 const verifyUserRoles = require("../middlewares/verifyUserRoles")
 const ROLES_LIST = require("../utils/rolesList")
 
