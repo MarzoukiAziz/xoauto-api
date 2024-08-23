@@ -200,18 +200,32 @@ const softDeleteUser = asyncHandler(async (req, res, next) => {
   }
 });
 
-module.exports = { registerUser, loginUser, generateAccessToken, changePassword, forgetPassword, resetPassword, softDeleteUser }
+// Get All Users
+const getAllUsers = async (req, res, next) => {
+  try {
+    const users = await User.find();
+    res.status(200).json(users);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Get User By Id
+const getUserByUid = async (req, res, next) => {
+  const { id } = req.params;
+
+  try {
+    const user = await User.findOne({ _id: id });
+
+    if (!user) {
+      res.status(404).json({ error: 'User not found' });
+    } else {
+      res.status(200).json(user);
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 
 
-
-
-
-
-
-
-
-
-
-
-
-
+module.exports = { registerUser, loginUser, generateAccessToken, changePassword, forgetPassword, resetPassword, softDeleteUser, getAllUsers, getUserByUid }

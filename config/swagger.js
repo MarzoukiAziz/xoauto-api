@@ -1,5 +1,93 @@
 /**
  * @swagger
+ * /api/v1/user/:
+ *   get:
+ *     summary: Get all users
+ *     tags: 
+ *       - User
+ *     responses:
+ *       200:
+ *         description: A list of all users
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                     description: The unique identifier for the user
+ *                     example: "60f6ad2d4f1a2b6c88fa54e5"
+ *                   username:
+ *                     type: string
+ *                     description: The username of the user
+ *                     example: "johndoe"
+ *                   email:
+ *                     type: string
+ *                     description: The email of the user
+ *                     example: "johndoe@example.com"
+ *                   role:
+ *                     type: string
+ *                     description: The role of the user
+ *                     example: "USER"
+ */
+
+/**
+ * @swagger
+ * /api/v1/user/{id}:
+ *   get:
+ *     summary: Get a user by ID
+ *     tags: 
+ *       - User
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: The unique identifier of the user
+ *         schema:
+ *           type: string
+ *           example: "60f6ad2d4f1a2b6c88fa54e5"
+ *     responses:
+ *       200:
+ *         description: User found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                   description: The unique identifier for the user
+ *                   example: "60f6ad2d4f1a2b6c88fa54e5"
+ *                 username:
+ *                   type: string
+ *                   description: The username of the user
+ *                   example: "johndoe"
+ *                 email:
+ *                   type: string
+ *                   description: The email of the user
+ *                   example: "johndoe@example.com"
+ *                 role:
+ *                   type: string
+ *                   description: The role of the user
+ *                   example: "USER"
+ *       404:
+ *         description: User not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   description: Error message
+ *                   example: "User not found"
+ */
+
+
+/**
+ * @swagger
  * /api/v1/user/register:
  *   post:
  *     summary: Register a new user
@@ -438,4 +526,426 @@
  *                 error:
  *                   type: string
  *                   example: "User not found."
+ */
+
+
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     User:
+ *       type: object
+ *       properties:
+ *         _id:
+ *           type: string
+ *           description: The unique identifier for the user
+ *           example: "60f6ad2d4f1a2b6c88fa54e5"
+ *         username:
+ *           type: string
+ *           description: The username of the user
+ *           example: "johndoe"
+ *         email:
+ *           type: string
+ *           description: The email of the user
+ *           example: "johndoe@example.com"
+ *         role:
+ *           type: string
+ *           description: The role of the user
+ *           example: "USER"
+ */
+
+
+/**
+ * @swagger
+ * /api/v1/article:
+ *   get:
+ *     summary: Get all articles
+ *     tags: 
+ *       - Articles
+ *     description: Retrieve a list of all articles, with optional filters for category and keywords.
+ *     parameters:
+ *       - in: query
+ *         name: category
+ *         required: false
+ *         description: Filter articles by category
+ *         schema:
+ *           type: string
+ *           example: "technology"
+ *       - in: query
+ *         name: keywords
+ *         required: false
+ *         description: Filter articles by title or content keywords
+ *         schema:
+ *           type: string
+ *           example: "AI"
+ *       - in: query
+ *         name: size
+ *         required: false
+ *         description: Number of articles to return per page
+ *         schema:
+ *           type: integer
+ *           example: 10
+ *       - in: query
+ *         name: page
+ *         required: false
+ *         description: Page number for pagination
+ *         schema:
+ *           type: integer
+ *           example: 1
+ *     responses:
+ *       200:
+ *         description: A list of articles
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 articles:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Article'
+ *                 count:
+ *                   type: integer
+ *                   example: 100
+ */
+
+/**
+ * @swagger
+ * /api/v1/article:
+ *   post:
+ *     summary: Create a new article
+ *     tags: 
+ *       - Articles
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Article'
+ *     responses:
+ *       201:
+ *         description: Article created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Article'
+ */
+
+/**
+ * @swagger
+ * /api/v1/article/{id}:
+ *   get:
+ *     summary: Get an article by ID
+ *     tags: 
+ *       - Articles
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: The article ID
+ *         schema:
+ *           type: string
+ *           example: "60f6ad2d4f1a2b6c88fa54e5"
+ *     responses:
+ *       200:
+ *         description: The requested article
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Article'
+ *       404:
+ *         description: Article not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   example: "Article not found."
+ */
+
+/**
+ * @swagger
+ * /api/v1/article/{id}:
+ *   put:
+ *     summary: Update an article by ID
+ *     tags: 
+ *       - Articles
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: The article ID
+ *         schema:
+ *           type: string
+ *           example: "60f6ad2d4f1a2b6c88fa54e5"
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Article'
+ *     responses:
+ *       200:
+ *         description: Article updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Article'
+ *       404:
+ *         description: Article not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   example: "Article not found."
+ */
+
+/**
+ * @swagger
+ * /api/v1/article/{id}:
+ *   delete:
+ *     summary: Delete an article by ID
+ *     tags: 
+ *       - Articles
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: The article ID
+ *         schema:
+ *           type: string
+ *           example: "60f6ad2d4f1a2b6c88fa54e5"
+ *     responses:
+ *       200:
+ *         description: Article deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Article'
+ *       404:
+ *         description: Article not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   example: "Article not found."
+ */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Article:
+ *       type: object
+ *       properties:
+ *         title:
+ *           type: string
+ *           description: The title of the article
+ *           example: "Understanding AI"
+ *         content:
+ *           type: string
+ *           description: The content of the article
+ *           example: "This article explains the basics of AI..."
+ *         category:
+ *           type: string
+ *           description: The category of the article
+ *           example: "technology"
+ *         previewImg:
+ *           type: string
+ *           description: The previewImg of the article
+ *           example: "https://media.gqmagazine.fr/photos/606c19c3a813725515a80944/16:9/w_3360,h_1890,c_limit/mclarenarturaflux-11.jpeg"
+ */
+
+
+/**
+ * @swagger
+ * /api/v1/comment/article/{articleId}:
+ *   get:
+ *     summary: Get comments by article ID
+ *     tags: 
+ *       - Comments
+ *     parameters:
+ *       - in: path
+ *         name: articleId
+ *         required: true
+ *         description: The article ID
+ *         schema:
+ *           type: string
+ *           example: "60f6ad2d4f1a2b6c88fa54e5"
+ *     responses:
+ *       200:
+ *         description: A list of comments for the specified article
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                     description: The unique identifier for the comment
+ *                     example: "60f6ad2d4f1a2b6c88fa54e5"
+ *                   uid:
+ *                     type: string
+ *                     description: The ID of the user who created the comment
+ *                     example: "5f6ad2d4f1a2b6c88fa54e5"
+ *                   articleId:
+ *                     type: string
+ *                     description: The ID of the article the comment belongs to
+ *                     example: "5f6ad2d4f1a2b6c88fa54e5"
+ *                   content:
+ *                     type: string
+ *                     description: The content of the comment
+ *                     example: "This is a comment."
+ *                   answerTo:
+ *                     type: string
+ *                     description: The ID of the comment this comment is replying to (if any)
+ *                     example: "60f6ad2d4f1a2b6c88fa54e5"
+ *                   createdAt:
+ *                     type: string
+ *                     format: date-time
+ *                     description: The date and time when the comment was created
+ *                     example: "2023-08-22T14:48:00.000Z"
+ *                   updatedAt:
+ *                     type: string
+ *                     format: date-time
+ *                     description: The date and time when the comment was last updated
+ *                     example: "2023-08-22T15:48:00.000Z"
+ */
+
+/**
+ * @swagger
+ * /api/v1/comment:
+ *   post:
+ *     summary: Create a new comment
+ *     tags: 
+ *       - Comments
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Comment'
+ *     responses:
+ *       201:
+ *         description: Comment created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Comment'
+ *     security:
+ *       - bearerAuth: []
+ *     x-roles:
+ *       - USER
+ */
+
+/**
+ * @swagger
+ * /api/v1/comment/{id}:
+ *   put:
+ *     summary: Update a comment by comment ID
+ *     tags: 
+ *       - Comments
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: The comment ID
+ *         schema:
+ *           type: string
+ *           example: "60f6ad2d4f1a2b6c88fa54e5"
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               content:
+ *                 type: string
+ *                 example: "Updated comment content"
+ *     responses:
+ *       200:
+ *         description: Comment updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Comment'
+ *     security:
+ *       - bearerAuth: []
+ *     x-roles:
+ *       - USER
+ */
+
+/**
+ * @swagger
+ * /api/v1/comment/{id}:
+ *   delete:
+ *     summary: Delete a comment by comment ID
+ *     tags: 
+ *       - Comments
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: The comment ID
+ *         schema:
+ *           type: string
+ *           example: "60f6ad2d4f1a2b6c88fa54e5"
+ *     responses:
+ *       200:
+ *         description: Comment deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Comment'
+ *     security:
+ *       - bearerAuth: []
+ *     x-roles:
+ *       - ADMIN
+ *       - USER
+ */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Comment:
+ *       type: object
+ *       properties:
+ *         uid:
+ *           type: string
+ *           description: The ID of the user who created the comment
+ *           example: "5f6ad2d4f1a2b6c88fa54e5"
+ *         articleId:
+ *           type: string
+ *           description: The ID of the article the comment belongs to
+ *           example: "5f6ad2d4f1a2b6c88fa54e5"
+ *         content:
+ *           type: string
+ *           description: The content of the comment
+ *           example: "This is a comment."
+ *         answerTo:
+ *           type: string
+ *           description: The ID of the comment this comment is replying to (if any)
+ *           example: "60f6ad2d4f1a2b6c88fa54e5"
  */
