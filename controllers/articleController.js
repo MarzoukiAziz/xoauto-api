@@ -23,7 +23,7 @@ const getAllArticles = async (req, res, next) => {
 
         else if (category) {
             query = { category: category };
-        } else if (search) {
+        } else if (keywords) {
             query = {
                 $or: [
                     { title: { $regex: keywords, $options: 'i' } },
