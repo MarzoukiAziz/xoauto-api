@@ -1,5 +1,8 @@
 //Configuring Dotenv to use environment variables from .env file
-require("dotenv").config();
+const dotenv = require('dotenv');
+const environment = process.env.NODE_ENV || 'dev';
+dotenv.config({ path: `.env.${environment}` });
+console.log('Running in environment:', environment);
 
 //Import Modules
 const path = require("path");
@@ -23,8 +26,8 @@ app.use(
 app.use("/v1/logs", express.static(path.join(__dirname, "/logs")));
 
 // CORS Handler
-// const corsHandler = require("./middlewares/corsHandler");
-// app.use(corsHandler);
+const corsHandler = require("./middlewares/corsHandler");
+app.use(corsHandler);
 
 //Using Express.JSON
 app.use(express.json());
@@ -45,28 +48,9 @@ const cron = require("node-cron");
 // });
 
 //Swagger
-const swaggerUi = require('swagger-ui-express');
-const swaggerJsdoc = require('swagger-jsdoc');
-const swaggerOptions = {
-  definition: {
-    openapi: '3.0.0',
-    info: {
-      title: 'XoAuto API Swagger',
-      version: '1.0.0',
-      description: 'API documentation for XoAuto API application.',
-    },
-    servers: [
-      {
-        url: 'http://localhost:5000',
-      },
-    ],
-  },
-  apis: ['./config/swagger.js'], // Path to your API files
-};
-
-const swaggerDocs = swaggerJsdoc(swaggerOptions);
+// Swagger
+const { swaggerUi, swaggerDocs } = require('./config/swaggerConfig');
 app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
-
 
 //Listening om the port
 app.listen(port, () => {

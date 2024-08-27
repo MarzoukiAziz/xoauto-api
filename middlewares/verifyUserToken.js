@@ -22,7 +22,7 @@ const verifyUserToken = (req, res, next) => {
   }
 
   // Verify the token and decode its payload
-  jwt.verify(token, process.env.D_B_SECRET_KEY, async (err, decoded) => {
+  jwt.verify(token, process.env.SECRET_KEY, async (err, decoded) => {
     if (err) {
       // If the token verification fails, send an invalid token response
       return next(new ErrorResponse("Invalid token", 403));

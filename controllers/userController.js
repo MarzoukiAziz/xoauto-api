@@ -33,9 +33,7 @@ const registerUser = asyncHandler(async (req, res, next) => {
     name,
     email,
     password: passwordHash,
-    roles: {
-      USER: ROLES_LIST.USER//<YOUR_USER_ROLE_IDENTIFICATION (Can be any number or anything)>
-    },
+    roles: [ROLES_LIST.USER],
     phone,
     pro: false,
     email_verified: false,
@@ -68,9 +66,8 @@ const loginUser = asyncHandler(async (req, res, next) => {
     res.status(200).json({
       success: true,
       data: {
-        message: loginSuccessfulMessage,
         accessToken: tokens.accessToken,
-        refreshToken: tokens.refreshToken
+        user
       }
     });
   } catch (err) {
@@ -200,6 +197,26 @@ const softDeleteUser = asyncHandler(async (req, res, next) => {
   }
 });
 
+// Controller to soft delete a user
+const activateUser = asyncHandler(async (req, res, next) => {
+  const userId = req.params.id;
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return next(new ErrorResponse(userNotFoundMessage, 404));
+    }
+    await user.cancelDelete(); // Call the cancelDelete() method
+    res.status(200).json({
+      success: true,
+      data: {
+        message: "User activated successfully.",
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
 // Get All Users
 const getAllUsers = async (req, res, next) => {
   try {
@@ -227,5 +244,29 @@ const getUserByUid = async (req, res, next) => {
   }
 };
 
+// get the current user's account details
+const getMyAccount = asyncHandler(async (req, res, next) => {
+  try {
+    // Assuming the user ID is stored in the JWT and available in `req.user`
+    const userId = req.userId;
+    // Find the user by their ID
+    const user = await User.findById(userId).select('-password'); // Exclude the password field
 
-module.exports = { registerUser, loginUser, generateAccessToken, changePassword, forgetPassword, resetPassword, softDeleteUser, getAllUsers, getUserByUid }
+    if (!user) {
+      return next(new ErrorResponse(userNotFoundMessage, 404));
+    }
+
+    res.status(200).json({
+      success: true,
+      data: {
+        user
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+
+
+module.exports = { registerUser, loginUser, generateAccessToken, changePassword, forgetPassword, resetPassword, softDeleteUser, getAllUsers, getUserByUid, getMyAccount, activateUser }
