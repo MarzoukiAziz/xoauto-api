@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 const verifyUserRoles = (...allowedRoles) => {
   return (req, res, next) => {
     // Check if user roles are available in the request
-    if (!req?.user?.roles) {
+    if (!req?.roles) {
       // If roles are missing, send an unauthorized response
       return next(new ErrorResponse("Unauthorized access", 401));
     }
@@ -14,7 +14,7 @@ const verifyUserRoles = (...allowedRoles) => {
     const rolesArray = [...allowedRoles];
 
     // Check if any of the user's roles match the allowed roles
-    const isAllowed = req.user.roles.some((userRole) =>
+    const isAllowed = req.roles.some((userRole) =>
       rolesArray.includes(userRole)
     );
 

@@ -11,6 +11,12 @@ module.exports = function softDeleteMiddleware(schema) {
     this.deleted = true;
     return this.save();
   };
+
+  // cancel delete
+  schema.methods.cancelDelete = function () {
+    this.deleted = false;
+    return this.save();
+  };
   // Add a static method to find non-deleted documents
   schema.statics.findNotDeleted = function (conditions = {}) {
     return this.find({ ...conditions, deleted: false });
