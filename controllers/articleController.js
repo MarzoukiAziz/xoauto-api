@@ -7,9 +7,9 @@ const getAllArticles = async (req, res, next) => {
             category,
             keywords,
             size,
-            page
+            page,
+            sort
         } = req.query;
-
         let query = {};
         if (category && keywords) {
             query = {
@@ -33,7 +33,7 @@ const getAllArticles = async (req, res, next) => {
         }
 
         const articles = await Article.find(query)
-            .sort({ createdAt: -1 }) // Sort by most recent (descending order)
+            .sort({ createdAt: sort == "asc" ? 1 : -1 }) // Sort by most recent (descending order)
             .skip(size * (page - 1)).limit(size);
         const count = await Article.countDocuments(query);
 
