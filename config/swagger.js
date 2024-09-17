@@ -949,3 +949,416 @@
  *           description: The ID of the comment this comment is replying to (if any)
  *           example: "60f6ad2d4f1a2b6c88fa54e5"
  */
+/**
+ * @swagger
+ * /api/v1/ads:
+ *   get:
+ *     summary: Retrieve a list of ads with pagination and sorting
+ *     tags:
+ *       - Ads
+ *     parameters:
+ *       - in: query
+ *         name: size
+ *         required: false
+ *         description: Number of ads to return per page
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *           example: 10
+ *       - in: query
+ *         name: page
+ *         required: false
+ *         description: Page number to retrieve
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *           example: 1
+ *       - in: query
+ *         name: sort
+ *         required: false
+ *         description: Sort order of the ads based on creation date (ascending or descending)
+ *         schema:
+ *           type: string
+ *           default: 'desc'
+ *           enum:
+ *             - asc
+ *             - desc
+ *           example: 'desc'
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved list of ads
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ads:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Ad'
+ *                   example: [
+ *                     {
+ *                       "title": "2024 Tesla Model S",
+ *                       "description": "A premium electric sedan with exceptional performance.",
+ *                       "price": 79900,
+ *                       "type": "new",
+ *                       "brand": "Tesla",
+ *                       "model": "Model S",
+ *                       "version": "Plaid",
+ *                       "category": "Electric Sedan",
+ *                       "mileage": 0,
+ *                       "first_registration": {
+ *                         "month": 8,
+ *                         "year": 2024
+ *                       },
+ *                       "fuel_type": "electric",
+ *                       "seats": 5,
+ *                       "color": "Red",
+ *                       "crit_air": "Euro 6",
+ *                       "horsepower": 1020,
+ *                       "power_kw": 750,
+ *                       "autonomy_wltp_km": 396,
+ *                       "options_vehicule": {
+ *                         "gps": true,
+ *                         "heated_seats": true,
+ *                         "sunroof": true
+ *                       },
+ *                       "courant": {
+ *                         "AC": "11kW",
+ *                         "DC": "250kW"
+ *                       },
+ *                       "photos": ["tesla_model_s_exterior.jpg"],
+ *                       "interior_video": "tesla_model_s_interior.mp4",
+ *                       "exterior_video": "tesla_model_s_exterior.mp4",
+ *                       "address": "123 Electric Avenue, San Francisco, CA",
+ *                       "phone_number": "+1234567890",
+ *                       "mask_phone": false
+ *                     }
+ *                   ]
+ *                 count:
+ *                   type: integer
+ *                   example: 50
+ *       500:
+ *         description: Server error
+ *     security:
+ *       - bearerAuth: []
+ *     x-roles:
+ *       - USER
+ */
+
+/**
+ * @swagger
+ * /api/v1/ads/{id}:
+ *   get:
+ *     summary: Get an ad by its ID
+ *     tags:
+ *       - Ads
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: The ID of the ad to retrieve
+ *         schema:
+ *           type: string
+ *           example: "64f9ad3b4f1b2d3c99ae3fe7"
+ *     responses:
+ *       200:
+ *         description: Ad retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Ad'
+ *       404:
+ *         description: Ad not found
+ *     security:
+ *       - bearerAuth: []
+ *     x-roles:
+ *       - USER
+ */
+/**
+ * @swagger
+ * /api/v1/ads/by-user/{uid}:
+ *   get:
+ *     summary: Get all ads by a specific user ID
+ *     tags:
+ *       - Ads
+ *     parameters:
+ *       - in: path
+ *         name: uid
+ *         required: true
+ *         description: The ID of the user whose ads are to be retrieved
+ *         schema:
+ *           type: string
+ *           example: "64f9ad3b4f1b2d3c99ae3fe7"
+ *     responses:
+ *       200:
+ *         description: Ads retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Ad'
+ *       404:
+ *         description: No ads found for the given user ID
+ *     security:
+ *       - bearerAuth: []
+ *     x-roles:
+ *       - USER
+ */
+/**
+ * @swagger
+ * /api/v1/ads/today:
+ *   get:
+ *     summary: Get all ads created today
+ *     tags:
+ *       - Ads
+ *     responses:
+ *       200:
+ *         description: Ads created today retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Ad'
+ *       500:
+ *         description: Server error
+ *     security:
+ *       - bearerAuth: []
+ *     x-roles:
+ *       - USER
+ */
+/**
+ * @swagger
+ * /api/v1/ads:
+ *   post:
+ *     summary: Create a new ad
+ *     tags:
+ *       - Ads
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Ad'
+ *     responses:
+ *       201:
+ *         description: Ad created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Ad'
+ *       400:
+ *         description: Bad request if the ad data is invalid
+ *       500:
+ *         description: Server error
+ *     security:
+ *       - bearerAuth: []
+ *     x-roles:
+ *       - USER
+ */
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Ad:
+ *       type: object
+ *       properties:
+ *         uid:
+ *           type: string
+ *           example: "66cd26f4920b0cf9c203b0d5"
+ *         title:
+ *           type: string
+ *           example: "2024 Audi Q4 e-tron"
+ *         description:
+ *           type: string
+ *           example: "A versatile electric SUV with a spacious interior and cutting-edge technology."
+ *         price:
+ *           type: number
+ *           example: 45900
+ *         type:
+ *           type: string
+ *           example: "new"
+ *         brand:
+ *           type: string
+ *           example: "Audi"
+ *         model:
+ *           type: string
+ *           example: "Q4 e-tron"
+ *         version:
+ *           type: string
+ *           example: "50 quattro"
+ *         category:
+ *           type: string
+ *           example: "Electric SUV"
+ *         mileage:
+ *           type: number
+ *           example: 0
+ *         first_registration:
+ *           type: object
+ *           properties:
+ *             month:
+ *               type: number
+ *               example: 6
+ *             year:
+ *               type: number
+ *               example: 2024
+ *         fuel_type:
+ *           type: string
+ *           example: "electric"
+ *         seats:
+ *           type: number
+ *           example: 5
+ *         color:
+ *           type: string
+ *           example: "District Green"
+ *         crit_air:
+ *           type: string
+ *           example: "Euro 6"
+ *         horsepower:
+ *           type: number
+ *           example: 295
+ *         power_kw:
+ *           type: number
+ *           example: 220
+ *         autonomy_wltp_km:
+ *           type: number
+ *           example: 300
+ *         options_vehicule:
+ *           type: object
+ *           properties:
+ *             gps:
+ *               type: boolean
+ *               example: true
+ *             heated_seats:
+ *               type: boolean
+ *               example: true
+ *             sunroof:
+ *               type: boolean
+ *               example: true
+ *             panoramic_roof:
+ *               type: boolean
+ *               example: false
+ *             bluetooth:
+ *               type: boolean
+ *               example: true
+ *             rear_camera:
+ *               type: boolean
+ *               example: true
+ *             automatic_climate_control:
+ *               type: boolean
+ *               example: true
+ *             leather_seats:
+ *               type: boolean
+ *               example: true
+ *             non_smoker:
+ *               type: boolean
+ *               example: true
+ *         courant:
+ *           type: object
+ *           properties:
+ *             AC:
+ *               type: string
+ *               example: "11kW"
+ *             DC:
+ *               type: string
+ *               example: "150kW"
+ *         photos:
+ *           type: array
+ *           items:
+ *             type: string
+ *           example: ["audi_q4_exterior1.jpg", "audi_q4_interior1.jpg"]
+ *         interior_video:
+ *           type: string
+ *           example: "audi_q4_interior.mp4"
+ *         exterior_video:
+ *           type: string
+ *           example: "audi_q4_exterior.mp4"
+ *         address:
+ *           type: string
+ *           example: "789 Green Drive, Los Angeles, CA"
+ *         phone_number:
+ *           type: string
+ *           example: "+1987654321"
+ *         mask_phone:
+ *           type: boolean
+ *           example: false
+ *       required:
+ *         - title
+ *         - price
+ *         - type
+ *         - brand
+ *         - model
+ *         - category
+ */
+/**
+ * @swagger
+ * /api/v1/ads/{id}:
+ *   put:
+ *     summary: Update an ad by ad ID
+ *     tags:
+ *       - Ads
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: The ID of the ad to be updated
+ *         schema:
+ *           type: string
+ *           example: "64f5a5b4f6d9c06b4e0a1e2a"
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Ad'
+ *     responses:
+ *       200:
+ *         description: Ad updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Ad'
+ *       404:
+ *         description: Ad not found
+ *       400:
+ *         description: Bad request if the update data is invalid
+ *       500:
+ *         description: Server error
+ *     security:
+ *       - bearerAuth: []
+ *     x-roles:
+ *       - USER
+ */
+/**
+ * @swagger
+ * /api/v1/ads/{id}:
+ *   delete:
+ *     summary: Delete an ad by ad ID
+ *     tags:
+ *       - Ads
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: The ID of the ad to be deleted
+ *         schema:
+ *           type: string
+ *           example: "64f5a5b4f6d9c06b4e0a1e2a"
+ *     responses:
+ *       200:
+ *         description: Ad deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Ad'
+ *       404:
+ *         description: Ad not found
+ *       500:
+ *         description: Server error
+ *     security:
+ *       - bearerAuth: []
+ *     x-roles:
+ *       - ADMIN
+ */
