@@ -145,8 +145,10 @@ const createAd = async (req, res, next) => {
 const updateAd = async (req, res, next) => {
     try {
         const { id } = req.params;
-        const ad = await Ad.findByIdAndUpdate(id, req.body, { new: true });
+        const updateData = { ...req.body };
+        delete updateData.views;
 
+        const ad = await Ad.findByIdAndUpdate(id, updateData, { new: true });
         if (!ad) {
             return res.status(404).json({ message: "Ad not found" });
         }
