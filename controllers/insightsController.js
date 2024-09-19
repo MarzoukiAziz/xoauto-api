@@ -11,8 +11,10 @@ const getStartOfLast30Days = () => {
 const getDashboardHighlights = async (req, res, next) => {
     try {
         const startOfLast30Days = getStartOfLast30Days();
-        // Total users
-        const totalUsers = await User.countDocuments();
+        // New users
+        const newUsers = await User.countDocuments({
+            createdAt: { $gte: startOfLast30Days }
+        });
 
         // Active users in the last 30 days
         const activeUsersLast30Days = await User.countDocuments({
@@ -42,15 +44,12 @@ const getDashboardHighlights = async (req, res, next) => {
         ]);
 
         res.status(200).json({
-            success: true,
-            data: {
-                totalUsers,
-                activeUsersLast30Days,
-                newArticlesLast30Days,
-                articleViewsLast30Days: articleViewsLast30Days[0]?.totalViews || 0,
-                newAdsLast30Days,
-                adViewsLast30Days: adViewsLast30Days[0]?.totalViews || 0
-            }
+            newUsers,
+            activeUsersLast30Days,
+            newArticlesLast30Days,
+            articleViewsLast30Days: articleViewsLast30Days[0]?.totalViews || 0,
+            newAdsLast30Days,
+            adViewsLast30Days: adViewsLast30Days[0]?.totalViews || 0
         });
     } catch (error) {
         next(error);
