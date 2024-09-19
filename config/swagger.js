@@ -634,35 +634,35 @@
 
 /**
  * @swagger
- * /api/v1/article/{id}:
+ * /api/v1/ads/{id}:
  *   get:
- *     summary: Get an article by ID
+ *     summary: Get an ad by ID
  *     tags: 
- *       - Articles
+ *       - Ads
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         description: The article ID
+ *         description: The ad ID
  *         schema:
  *           type: string
- *           example: "60f6ad2d4f1a2b6c88fa54e5"
+ *           example: "64f5a5b4f6d9c06b4e0a1e2a"
  *       - in: query
  *         name: view
  *         required: false
- *         description: Set to true to increment the article view count
+ *         description: Set to true to increment the ad view count and log the view details
  *         schema:
  *           type: boolean
  *           example: true
  *     responses:
  *       200:
- *         description: The requested article
+ *         description: The requested ad
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Article'
+ *               $ref: '#/components/schemas/Ad'
  *       404:
- *         description: Article not found
+ *         description: Ad not found
  *         content:
  *           application/json:
  *             schema:
@@ -673,7 +673,20 @@
  *                   example: false
  *                 error:
  *                   type: string
- *                   example: "Article not found."
+ *                   example: "Ad not found."
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   example: "Internal server error."
  */
 
 /**
@@ -991,6 +1004,13 @@
  *             - asc
  *             - desc
  *           example: 'desc'
+ *       - in: query
+ *         name: includeViews
+ *         required: false
+ *         description: include views count 
+ *         schema:
+ *           type: boolean
+ *           example: true
  *     responses:
  *       200:
  *         description: Successfully retrieved list of ads
@@ -1068,6 +1088,13 @@
  *         schema:
  *           type: string
  *           example: "64f9ad3b4f1b2d3c99ae3fe7"
+ *       - in: query
+ *         name: includeViews
+ *         required: false
+ *         description: include views count 
+ *         schema:
+ *           type: boolean
+ *           example: true
  *     responses:
  *       200:
  *         description: Ad retrieved successfully
@@ -1097,6 +1124,13 @@
  *         schema:
  *           type: string
  *           example: "64f9ad3b4f1b2d3c99ae3fe7"
+ *       - in: query
+ *         name: includeViews
+ *         required: false
+ *         description: include views count 
+ *         schema:
+ *           type: boolean
+ *           example: true
  *     responses:
  *       200:
  *         description: Ads retrieved successfully

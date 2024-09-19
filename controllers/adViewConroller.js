@@ -15,7 +15,11 @@ const createAdView = async (req, res, next) => {
 const getViewsByAdId = async (req, res, next) => {
     try {
         const { adId } = req.params;
-        const views = await AdView.find({ adId }).populate('userId', 'name email');
+        const views = await AdView.find({ adId })
+            .populate({
+                path: 'userId',
+                select: 'name email',
+            });
         res.status(200).json(views);
     } catch (error) {
         next(error);

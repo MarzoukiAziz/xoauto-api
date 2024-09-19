@@ -56,6 +56,7 @@ const AdSchema = new mongoose.Schema({
     phone_number: { type: String, required: false },
     mask_phone: { type: Boolean, default: false },
     active: { type: Boolean, default: true },
+    views: { type: Number, required: false },
 }, { timestamps: true });
 
 AdSchema.index({ price: 1 });

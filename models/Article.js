@@ -33,6 +33,6 @@ const articleSchema = new Schema({
     timestamps: true,
 });
 
-module.exports = new mongoose.model("article", articleSchema)
+module.exports = new mongoose.model("Article", articleSchema)
 
 
