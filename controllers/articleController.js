@@ -50,15 +50,18 @@ const getAllArticles = async (req, res, next) => {
 // Get article by ID
 const getArticleById = async (req, res, next) => {
     try {
-        const id = req.params.id
+        const { id } = req.params
+        const { view } = req.query
         const article = await Article.findById(id).exec();
-
+        if (view == "true") {
+            article.views = article.views + 1
+            await article.save();
+        }
         if (!article) {
             return res.status(404).json({
                 message: "Article not found"
             });
         }
-
         res.status(200).json(article);
     }
     catch (error) {
