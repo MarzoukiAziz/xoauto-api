@@ -224,12 +224,55 @@ const activateUser = asyncHandler(async (req, res, next) => {
 // Get All Users
 const getAllUsers = async (req, res, next) => {
   try {
-    const users = await User.find();
-    res.status(200).json(users);
+    const {
+      role,
+      keywords,
+      size,
+      page,
+      sort
+    } = req.query;
+
+    let query = {};
+
+    if (role && keywords) {
+      query = {
+        roles: { $in: [role] },
+        $or: [
+          { name: { $regex: keywords, $options: 'i' } },
+          { email: { $regex: keywords, $options: 'i' } },
+        ],
+      };
+    } else if (role) {
+      query = { roles: { $in: [role] }, };
+    } else if (keywords) {
+      query = {
+        $or: [
+          { name: { $regex: keywords, $options: 'i' } },
+          { email: { $regex: keywords, $options: 'i' } },
+        ],
+      };
+    }
+
+    // Fetching the filtered users with pagination and sorting
+    const users = await User.find(query)
+      .sort({ createdAt: sort === "asc" ? 1 : -1 }) // Sorting by createdAt, ascending or descending
+      .skip(size * (page - 1))
+      .limit(size);
+
+    // Counting the total number of users
+    const count = await User.countDocuments(query);
+
+    // Prepare the response with users and the total count
+    res.status(200).json({
+      users: users,
+      count: count
+    });
+
   } catch (error) {
     next(error);
   }
 };
+
 
 // Get User By Id
 const getUserByUid = async (req, res, next) => {
