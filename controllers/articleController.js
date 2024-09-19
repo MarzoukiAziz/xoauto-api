@@ -1,4 +1,5 @@
 const Article = require('../models/Article');
+const Comment = require('../models/Comment');
 
 // Get all articles
 const getAllArticles = async (req, res, next) => {
@@ -37,8 +38,16 @@ const getAllArticles = async (req, res, next) => {
             .skip(size * (page - 1)).limit(size);
         const count = await Article.countDocuments(query);
 
+        const articlesWithComments = await Promise.all(articles.map(async (article) => {
+            const commentCount = await Comment.countDocuments({ articleId: article._id });
+            return {
+                ...article.toObject(),
+                commentCount: commentCount
+            };
+        }));
+
         res.status(200).json({
-            articles: articles,
+            articles: articlesWithComments,
             count: count
         });
 
