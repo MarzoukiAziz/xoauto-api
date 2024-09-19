@@ -647,6 +647,13 @@
  *         schema:
  *           type: string
  *           example: "60f6ad2d4f1a2b6c88fa54e5"
+ *       - in: query
+ *         name: view
+ *         required: false
+ *         description: Set to true to increment the article view count
+ *         schema:
+ *           type: boolean
+ *           example: true
  *     responses:
  *       200:
  *         description: The requested article
