@@ -1641,3 +1641,49 @@
  *       500:
  *         description: Server error
  */
+
+/**
+ * @swagger
+ * /api/v1/inshights/dashboard-highlights:
+ *   get:
+ *     summary: Get dashboard highlights
+ *     description: Retrieves dashboard highlights including total users, active users this month, new articles, article views, new ads, and ad views.
+ *     tags:
+ *       - Insights
+ *     responses:
+ *       200:
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     totalUsers:
+ *                       type: integer
+ *                       example: 1200
+ *                     activeUsersLast30Days:
+ *                       type: integer
+ *                       example: 300
+ *                     newArticlesLast30Days:
+ *                       type: integer
+ *                       example: 50
+ *                     articleViewsLast30Days:
+ *                       type: integer
+ *                       example: 1500
+ *                     newAdsLast30Days:
+ *                       type: integer
+ *                       example: 40
+ *                     adViewsLast30Days:
+ *                       type: integer
+ *                       example: 600
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Server error
+ */
