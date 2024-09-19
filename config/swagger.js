@@ -634,35 +634,35 @@
 
 /**
  * @swagger
- * /api/v1/article/{id}:
+ * /api/v1/ads/{id}:
  *   get:
- *     summary: Get an article by ID
+ *     summary: Get an ad by ID
  *     tags: 
- *       - Articles
+ *       - Ads
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         description: The article ID
+ *         description: The ad ID
  *         schema:
  *           type: string
- *           example: "60f6ad2d4f1a2b6c88fa54e5"
+ *           example: "64f5a5b4f6d9c06b4e0a1e2a"
  *       - in: query
  *         name: view
  *         required: false
- *         description: Set to true to increment the article view count
+ *         description: Set to true to increment the ad view count and log the view details
  *         schema:
  *           type: boolean
  *           example: true
  *     responses:
  *       200:
- *         description: The requested article
+ *         description: The requested ad
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Article'
+ *               $ref: '#/components/schemas/Ad'
  *       404:
- *         description: Article not found
+ *         description: Ad not found
  *         content:
  *           application/json:
  *             schema:
@@ -673,7 +673,20 @@
  *                   example: false
  *                 error:
  *                   type: string
- *                   example: "Article not found."
+ *                   example: "Ad not found."
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   example: "Internal server error."
  */
 
 /**
@@ -991,6 +1004,13 @@
  *             - asc
  *             - desc
  *           example: 'desc'
+ *       - in: query
+ *         name: includeViews
+ *         required: false
+ *         description: include views count 
+ *         schema:
+ *           type: boolean
+ *           example: true
  *     responses:
  *       200:
  *         description: Successfully retrieved list of ads
@@ -1068,6 +1088,13 @@
  *         schema:
  *           type: string
  *           example: "64f9ad3b4f1b2d3c99ae3fe7"
+ *       - in: query
+ *         name: includeViews
+ *         required: false
+ *         description: include views count 
+ *         schema:
+ *           type: boolean
+ *           example: true
  *     responses:
  *       200:
  *         description: Ad retrieved successfully
@@ -1097,6 +1124,13 @@
  *         schema:
  *           type: string
  *           example: "64f9ad3b4f1b2d3c99ae3fe7"
+ *       - in: query
+ *         name: includeViews
+ *         required: false
+ *         description: include views count 
+ *         schema:
+ *           type: boolean
+ *           example: true
  *     responses:
  *       200:
  *         description: Ads retrieved successfully
@@ -1368,4 +1402,242 @@
  *       - bearerAuth: []
  *     x-roles:
  *       - ADMIN
+ */
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     AdView:
+ *       type: object
+ *       properties:
+ *         adId:
+ *           type: string
+ *           description: The ID of the ad being viewed
+ *           example: "64f5a5b4f6d9c06b4e0a1e2a"
+ *         userId:
+ *           type: string
+ *           description: The ID of the user viewing the ad (optional if anonymous)
+ *           example: "64f5a5b4f6d9c06b4e0a1e2b"
+ *         viewedAt:
+ *           type: string
+ *           format: date-time
+ *           description: The date and time when the ad was viewed
+ *           example: "2024-09-10T12:00:00Z"
+ *         viewerAgent:
+ *           type: string
+ *           description: User agent of the viewer (e.g., browser or device)
+ *           example: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+ *         location:
+ *           type: object
+ *           properties:
+ *             country:
+ *               type: string
+ *               description: Country of the viewer
+ *               example: "USA"
+ *             city:
+ *               type: string
+ *               description: City of the viewer
+ *               example: "Los Angeles"
+ *       required:
+ *         - adId
+ *       example:
+ *         adId: "64f5a5b4f6d9c06b4e0a1e2a"
+ *         userId: "64f5a5b4f6d9c06b4e0a1e2b"
+ *         viewedAt: "2024-09-10T12:00:00Z"
+ *         viewerAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/91.0.4472.124"
+ *         location: 
+ *           country: "USA"
+ *           city: "Los Angeles"
+ */
+/**
+ * @swagger
+ * /api/v1/ad-views:
+ *   get:
+ *     summary: Get all ad views with optional filters (time range, viewer agent, location)
+ *     tags:
+ *       - AdViews
+ *     parameters:
+ *       - in: query
+ *         name: startDate
+ *         schema:
+ *           type: string
+ *           format: date
+ *           description: Filter views starting from this date (inclusive)
+ *           example: "2024-09-01"
+ *       - in: query
+ *         name: endDate
+ *         schema:
+ *           type: string
+ *           format: date
+ *           description: Filter views until this date (inclusive)
+ *           example: "2024-09-20"
+ *       - in: query
+ *         name: viewerAgent
+ *         schema:
+ *           type: string
+ *           description: Filter views by viewer's user agent (e.g., browser, device)
+ *           example: ""
+ *       - in: query
+ *         name: country
+ *         schema:
+ *           type: string
+ *           description: Filter views by viewer's country
+ *           example: ""
+ *       - in: query
+ *         name: city
+ *         schema:
+ *           type: string
+ *           description: Filter views by viewer's city
+ *           example: ""
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved ad views
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/AdView'
+ *       400:
+ *         description: Invalid filters provided
+ *       500:
+ *         description: Server error
+ */
+/**
+ * @swagger
+ * /api/v1/ad-views/{id}:
+ *   get:
+ *     summary: Get ad view by ID
+ *     tags:
+ *       - AdViews
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: The ID of the ad view to retrieve
+ *         schema:
+ *           type: string
+ *           example: "64f5a5b4f6d9c06b4e0a1e2c"
+ *     responses:
+ *       200:
+ *         description: Ad view found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/AdView'
+ *       404:
+ *         description: Ad view not found
+ *       500:
+ *         description: Server error
+ */
+/**
+ * @swagger
+ * /api/v1/ad-views:
+ *   post:
+ *     summary: Create a new ad view
+ *     tags:
+ *       - AdViews
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/AdView'
+ *     responses:
+ *       201:
+ *         description: Ad view created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/AdView'
+ *       400:
+ *         description: Invalid input
+ *       500:
+ *         description: Server error
+ */
+
+/**
+ * @swagger
+ * /api/v1/ad-views/{id}:
+ *   delete:
+ *     summary: Delete an ad view by ID
+ *     tags:
+ *       - AdViews
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: The ID of the ad view to delete
+ *         schema:
+ *           type: string
+ *           example: "64f5a5b4f6d9c06b4e0a1e2c"
+ *     responses:
+ *       200:
+ *         description: Ad view deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/AdView'
+ *       404:
+ *         description: Ad view not found
+ *       500:
+ *         description: Server error
+ */
+/**
+ * @swagger
+ * /api/v1/ad-views/ad/{adId}:
+ *   get:
+ *     summary: Get all views for a specific ad by its ID
+ *     tags:
+ *       - AdViews
+ *     parameters:
+ *       - in: path
+ *         name: adId
+ *         required: true
+ *         description: The ID of the ad to get views for
+ *         schema:
+ *           type: string
+ *           example: "64f5a5b4f6d9c06b4e0a1e2a"
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved ad views
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/AdView'
+ *       404:
+ *         description: Ad not found
+ *       500:
+ *         description: Server error
+ */
+/**
+ * @swagger
+ * /api/v1/ad-views/user/{userId}:
+ *   get:
+ *     summary: Get all views made by a specific user by their user ID
+ *     tags:
+ *       - AdViews
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         description: The ID of the user to get views for
+ *         schema:
+ *           type: string
+ *           example: "64f5a5b4f6d9c06b4e0a1e2b"
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved user views
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/AdView'
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Server error
  */

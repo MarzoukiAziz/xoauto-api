@@ -40,13 +40,6 @@ app.use("/api", indexRoutes);
 const errorHandler = require("./middlewares/errorHandler");
 app.use(errorHandler);
 
-//Scripts Scheduling
-const cron = require("node-cron");
-// Define a cron job that runs every 14 minutes
-// cron.schedule("*/14 * * * *", () => {
-//   ...
-// });
-
 //Swagger
 // Swagger
 const { swaggerUi, swaggerDocs } = require('./config/swaggerConfig');
