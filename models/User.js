@@ -36,6 +36,7 @@ const userSchema = new Schema({
   favoris: [{ type: String }],
   passwordResetToken: String,
   passwordResetExpires: Date,
+  lastLogin: { type: Date, default: null },
 }, {
   timestamps: true, // Add createdAt and updatedAt fields
 });

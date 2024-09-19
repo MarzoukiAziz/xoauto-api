@@ -62,6 +62,10 @@ const loginUser = asyncHandler(async (req, res, next) => {
     if (!isMatch) {
       return next(new ErrorResponse(incorrectPasswordMessage, 401));
     }
+
+    user.lastLogin = Date.now();
+    await user.save();
+
     const tokens = generateTokens(user);  // Generate access and refresh tokens with customizable expiration times
     res.status(200).json({
       success: true,
