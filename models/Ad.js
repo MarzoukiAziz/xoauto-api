@@ -1,10 +1,7 @@
 const mongoose = require('mongoose');
 
 const AdSchema = new mongoose.Schema({
-    uid: {
-        type: String,
-        required: true
-    },
+    uid: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     title: { type: String, required: false },
     description: { type: String, required: false },
     price: { type: Number, required: true, min: 0 },

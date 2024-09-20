@@ -48,7 +48,10 @@ const getAdById = async (req, res, next) => {
         const { id } = req.params;
         const { view, includeViews } = req.query;
 
-        const ad = await Ad.findById(id);
+        const ad = await Ad.findById(id).populate({
+            path: 'uid',
+            select: 'name email createdAt pro avatar',
+        });;
 
         if (!ad) {
             return res.status(404).json({ message: "Ad not found" });
