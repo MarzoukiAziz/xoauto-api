@@ -14,7 +14,11 @@ const getAds = async (req, res, next) => {
         const adsQuery = (uid ? Ad.find({ uid: uid }) : Ad.find())
             .sort({ createdAt: sort === 'asc' ? 1 : -1 })
             .skip(size * (page - 1))
-            .limit(parseInt(size));
+            .limit(parseInt(size))
+            .populate({
+                path: 'uid',
+                select: 'name',
+            });;
         let ads = await adsQuery;
 
         if (includeViews === 'true') {
