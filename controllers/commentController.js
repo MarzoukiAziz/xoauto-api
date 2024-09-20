@@ -50,7 +50,7 @@ const getCommentsByArticleId = async (req, res, next) => {
         const comments = await Comment.find({ articleId }).sort({ createdDate: -1 });;
         const userPromises = comments.map(async (comment) => {
             const user = await User.findById(comment.uid);
-            return { ...comment.toObject(), user }; // Add the user to the comment object
+            return { ...comment.toObject(), user };
         });
 
         const commentsWithUsers = await Promise.all(userPromises);
