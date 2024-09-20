@@ -2,35 +2,81 @@
  * @swagger
  * /api/v1/user/:
  *   get:
- *     summary: Get all users
- *     tags: 
+ *     summary: Get all users with filtering, sorting, and pagination
+ *     tags:
  *       - User
+ *     parameters:
+ *       - name: role
+ *         in: query
+ *         description: Specify Role
+ *         required: false
+ *         schema:
+ *           type: string
+ *           example: ""
+ *       - name: keywords
+ *         in: query
+ *         description: Search users by name or email
+ *         required: false
+ *         schema:
+ *           type: string
+ *           example: ""
+ *       - name: size
+ *         in: query
+ *         description: Number of users to return per page
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *       - name: page
+ *         in: query
+ *         description: The page number to retrieve
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *       - name: sort
+ *         in: query
+ *         description: Sort order for the users (asc or desc)
+ *         required: false
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *           default: desc
  *     responses:
  *       200:
- *         description: A list of all users
+ *         description: A list of users based on the provided filters
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   _id:
- *                     type: string
- *                     description: The unique identifier for the user
- *                     example: "60f6ad2d4f1a2b6c88fa54e5"
- *                   username:
- *                     type: string
- *                     description: The username of the user
- *                     example: "johndoe"
- *                   email:
- *                     type: string
- *                     description: The email of the user
- *                     example: "johndoe@example.com"
- *                   role:
- *                     type: string
- *                     description: The role of the user
- *                     example: "USER"
+ *               type: object
+ *               properties:
+ *                 users:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       _id:
+ *                         type: string
+ *                         description: The unique identifier for the user
+ *                         example: "60f6ad2d4f1a2b6c88fa54e5"
+ *                       username:
+ *                         type: string
+ *                         description: The username of the user
+ *                         example: "johndoe"
+ *                       email:
+ *                         type: string
+ *                         description: The email of the user
+ *                         example: "johndoe@example.com"
+ *                       roles:
+ *                         type: array
+ *                         description: The roles of the user
+ *                         items:
+ *                           type: string
+ *                           example: "USER"
+ *                 count:
+ *                   type: integer
+ *                   description: Total number of users matching the query
+ *                   example: 100
  */
 
 /**
