@@ -1157,44 +1157,6 @@
  */
 /**
  * @swagger
- * /api/v1/ads/by-user/{uid}:
- *   get:
- *     summary: Get all ads by a specific user ID
- *     tags:
- *       - Ads
- *     parameters:
- *       - in: path
- *         name: uid
- *         required: true
- *         description: The ID of the user whose ads are to be retrieved
- *         schema:
- *           type: string
- *           example: "64f9ad3b4f1b2d3c99ae3fe7"
- *       - in: query
- *         name: includeViews
- *         required: false
- *         description: include views count 
- *         schema:
- *           type: boolean
- *           example: true
- *     responses:
- *       200:
- *         description: Ads retrieved successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Ad'
- *       404:
- *         description: No ads found for the given user ID
- *     security:
- *       - bearerAuth: []
- *     x-roles:
- *       - USER
- */
-/**
- * @swagger
  * /api/v1/ads/today:
  *   get:
  *     summary: Get all ads created today

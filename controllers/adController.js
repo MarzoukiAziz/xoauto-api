@@ -8,10 +8,10 @@ const getAds = async (req, res, next) => {
             size = 10,
             page = 1,
             sort = 'desc',
-            includeViews = 'false'
+            includeViews = 'false',
+            uid = ""
         } = req.query;
-
-        const adsQuery = Ad.find()
+        const adsQuery = (uid ? Ad.find({ uid: uid }) : Ad.find())
             .sort({ createdAt: sort === 'asc' ? 1 : -1 })
             .skip(size * (page - 1))
             .limit(parseInt(size));
@@ -35,7 +35,7 @@ const getAds = async (req, res, next) => {
                 views: viewCountMap[ad._id.toString()] || 0
             }));
         }
-        const count = await Ad.countDocuments();
+        const count = await Ad.countDocuments(uid ? { uid: uid } : {});
 
         res.status(200).json({ ads, count });
     } catch (error) {
@@ -85,35 +85,6 @@ const getAdById = async (req, res, next) => {
         }
 
         res.status(200).json(ad);
-    } catch (error) {
-        next(error);
-    }
-};
-
-const getAdsByUserId = async (req, res, next) => {
-    try {
-        const { uid } = req.params;
-        const { includeViews } = req.query;
-
-        const ads = await Ad.find({ uid: uid });
-
-        if (includeViews === 'true') {
-            const viewCounts = await AdView.aggregate([
-                { $match: { adId: { $in: ads.map(ad => ad._id) } } },
-                { $group: { _id: '$adId', viewCount: { $sum: 1 } } }
-            ]);
-
-            const adViewCounts = viewCounts.reduce((acc, view) => {
-                acc[view._id.toString()] = view.viewCount;
-                return acc;
-            }, {});
-
-            ads.forEach(ad => {
-                ad.views = adViewCounts[ad._id.toString()] || 0;
-            });
-        }
-
-        res.status(200).json(ads);
     } catch (error) {
         next(error);
     }
@@ -182,7 +153,6 @@ const deleteAd = async (req, res, next) => {
 module.exports = {
     getAds,
     getAdById,
-    getAdsByUserId,
     getTodayAds,
     createAd,
     updateAd,
