@@ -1733,3 +1733,121 @@
  *       500:
  *         description: Server error
  */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     ArticleCategory:
+ *       type: object
+ *       properties:
+ *         _id:
+ *           type: string
+ *           description: The unique identifier for the article category
+ *           example: "60f6ad2d4f1a2b6c88fa54e5"
+ *         name:
+ *           type: string
+ *           description: The name of the article category
+ *           example: "Technology"
+ */
+
+/**
+ * @swagger
+ * components:
+ *   responses:
+ *     ArticleCategoryResponse:
+ *       description: A single article category object
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/ArticleCategory'
+ *     ArticleCategoryListResponse:
+ *       description: A list of article categories
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: array
+ *             items:
+ *               $ref: '#/components/schemas/ArticleCategory'
+ */
+/**
+ * @swagger
+ * tags:
+ *   name: ArticleCategories
+ *   description: The ArticleCategories managing API
+ */
+
+/**
+ * @swagger
+ * /api/v1/settings/article-categories:
+ *   get:
+ *     summary: Get all article categories
+ *     tags: [ArticleCategories]
+ *     responses:
+ *       200:
+ *         description: A list of article categories
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/responses/ArticleCategoryListResponse'
+ *       500:
+ *         description: Server error
+ */
+
+/**
+ * @swagger
+ * /api/v1/settings/article-categories:
+ *   post:
+ *     summary: Create a new article category
+ *     tags: [ArticleCategories]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: The name of the article category
+ *                 example: "Technology"
+ *     responses:
+ *       201:
+ *         description: The created article category
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/responses/ArticleCategoryResponse'
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Server error
+ */
+
+/**
+ * @swagger
+ * /api/    v1/settings/article-categories/{id}:
+ *   delete:
+ *     summary: Delete a category by ID
+ *     tags: [ArticleCategories]
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         description: The ID of the category to delete
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: The deleted article category
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/responses/ArticleCategoryResponse'
+ *       404:
+ *         description: Category not found
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Server error
+ */
