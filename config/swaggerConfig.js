@@ -15,7 +15,16 @@ const swaggerOptions = {
             },
         ],
     },
-    apis: ['./config/swagger.js'], // Path to your API files
+    apis: [
+        './config/swagger/user-swagger.js',
+        './config/swagger/ad-swagger.js',
+        './config/swagger/ad-view-swagger.js',
+        './config/swagger/article-swagger.js',
+        './config/swagger/comment-swagger.js',
+        './config/swagger/insights-swagger.js',
+        './config/swagger/article-category-swagger.js',
+
+    ],
 };
 
 const swaggerDocs = swaggerJsdoc(swaggerOptions);
