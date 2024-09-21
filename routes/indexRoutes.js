@@ -15,7 +15,7 @@ router.use("/v1/article", articleRoutes);
 router.use("/v1/comment", commentRoutes);
 router.use("/v1/ads", adRoutes);
 router.use("/v1/ad-views", adViewRoutes);
-router.use("/v1/inshights", inshightsRoutes);
+router.use("/v1/insights", inshightsRoutes);
 router.use("/v1/settings/article-categories", articleCategoryRoutes);
 
 module.exports = router;
