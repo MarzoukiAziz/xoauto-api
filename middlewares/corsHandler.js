@@ -5,6 +5,7 @@ const corsHandler = (req, res, next) => {
   // List of origins allowed to access the server (CORS whitelist)
   const whitelist = [
     "http://localhost:3000",
+    "http://localhost:4200"
     // Add more allowed origins here if needed
   ];
 
