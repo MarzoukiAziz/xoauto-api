@@ -9,7 +9,9 @@ const adRoutes = require("./adRoutes");
 const adViewRoutes = require("./adViewRoutes");
 const inshightsRoutes = require("./inshightsRoutes");
 const articleCategoryRoutes = require("./articleCategoryRoutes");
+const cognitoRoutes = require("./cognitoRoutes");
 
+router.use("/v1/cognito", cognitoRoutes);
 router.use("/v1/user", userRoutes);
 router.use("/v1/article", articleRoutes);
 router.use("/v1/comment", commentRoutes);

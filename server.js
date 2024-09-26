@@ -1,8 +1,8 @@
 //Configuring Dotenv to use environment variables from .env file
-const dotenv = require('dotenv');
-const environment = process.env.NODE_ENV || 'dev';
+const dotenv = require("dotenv");
+const environment = process.env.NODE_ENV || "dev";
 dotenv.config({ path: `.env.${environment}` });
-console.log('Running in environment:', environment);
+console.log("Running in environment:", environment);
 
 //Import Modules
 const path = require("path");
@@ -42,8 +42,8 @@ app.use(errorHandler);
 
 //Swagger
 // Swagger
-const { swaggerUi, swaggerDocs } = require('./config/swaggerConfig');
-app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+const { swaggerUi, swaggerDocs } = require("./config/swaggerConfig");
+app.use("/swagger", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 //Listening om the port
 app.listen(port, () => {

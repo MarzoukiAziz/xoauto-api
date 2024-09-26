@@ -1,50 +1,50 @@
 const mongoose = require("mongoose");
 const crypto = require("crypto");
-const softDeleteMiddleware = require("../middlewares/softDeleteMiddleware")
+const softDeleteMiddleware = require("../middlewares/softDeleteMiddleware");
 
 const { Schema } = mongoose;
 
-const userSchema = new Schema({
-  name: {
-    type: String,
-    required: true,
+const userSchema = new Schema(
+  {
+    id: {
+      type: String,
+    },
+    name: {
+      type: String,
+      required: false,
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      match: [
+        /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/,
+        "Please enter a valid email",
+      ],
+    },
+    roles: {
+      type: Object,
+      required: true,
+    },
+    phone: { type: String, required: false },
+    avatar: { type: String, required: false },
+    pro: { type: Boolean, required: false },
+    favoris: [{ type: String }],
+    lastLogin: { type: Date, default: null },
   },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    lowercase: true,
-    match: [
-      /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/,
-      "Please enter a valid email",
-    ],
-  },
-  password: {
-    type: String,
-    required: true,
-    minlength: 6,
-  },
-  roles: {
-    type: Object,
-    required: true,
-  },
-  phone: { type: String, required: false },
-  avatar: { type: String, required: false },
-  pro: { type: Boolean, required: false },
-  email_verified: { type: Boolean, required: false },
-  phone_number_verified: { type: Boolean, required: false },
-  favoris: [{ type: String }],
-  passwordResetToken: String,
-  passwordResetExpires: Date,
-  lastLogin: { type: Date, default: null },
-}, {
-  timestamps: true, // Add createdAt and updatedAt fields
-});
+  {
+    timestamps: true, // Add createdAt and updatedAt fields
+  }
+);
 
 // Apply the softDeleteMiddleware to the schema
 userSchema.plugin(softDeleteMiddleware);
 
-const tokenExpirationMinutes = parseInt(process.env.PASSWORD_RESET_TOKEN_EXPIRATION, 10);
+const tokenExpirationMinutes = parseInt(
+  process.env.PASSWORD_RESET_TOKEN_EXPIRATION,
+  10
+);
 
 // Generate password reset token
 userSchema.methods.generatePasswordResetToken = function () {
@@ -57,4 +57,4 @@ userSchema.methods.generatePasswordResetToken = function () {
   return resetToken;
 };
 
-module.exports = new mongoose.model("User", userSchema) 
+module.exports = new mongoose.model("User", userSchema);
