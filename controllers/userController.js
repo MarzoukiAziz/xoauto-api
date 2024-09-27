@@ -1,23 +1,20 @@
 const User = require("../models/User");
+const AWS = require("aws-sdk");
+
+AWS.config.update({
+  region: process.env.AWS_REGION,
+});
+
+const cognito = new AWS.CognitoIdentityServiceProvider();
 
 // Get All Users
 const getAllUsers = async (req, res, next) => {
   try {
-    const { role, keywords, size, page, sort } = req.query;
+    const { keywords, size, page, sort } = req.query;
 
     let query = {};
 
-    if (role && keywords) {
-      query = {
-        roles: { $in: [role] },
-        $or: [
-          { name: { $regex: keywords, $options: "i" } },
-          { email: { $regex: keywords, $options: "i" } },
-        ],
-      };
-    } else if (role) {
-      query = { roles: { $in: [role] } };
-    } else if (keywords) {
+    if (keywords) {
       query = {
         $or: [
           { name: { $regex: keywords, $options: "i" } },
@@ -55,10 +52,40 @@ const getUserByUid = async (req, res, next) => {
     if (!user) {
       res.status(404).json({ error: "User not found" });
     } else {
-      res.status(200).json(user);
+      const params = {
+        UserPoolId: process.env.AWS_USER_POOL_ID,
+        Username: user.id,
+      };
+      const userCognitoInfo = await cognito.adminGetUser(params).promise();
+      const userAttributes = userCognitoInfo.UserAttributes.reduce(
+        (acc, attribute) => {
+          acc[attribute.Name] = attribute.Value;
+          return acc;
+        },
+        {}
+      );
+      const userGroupsResponse = await cognito
+        .adminListGroupsForUser(params)
+        .promise();
+      const userGroups = userGroupsResponse.Groups.map(
+        (group) => group.GroupName
+      );
+
+      res.status(200).json({
+        ...user.toObject(),
+        enable: userCognitoInfo.Enabled,
+        email_verified: userAttributes.email_verified === "true",
+        phone_number: userAttributes.phone_number,
+        phone_number_verified: userAttributes.phone_number_verified === "true",
+        roles: userGroups,
+      });
     }
   } catch (error) {
-    next(error);
+    if (error.code === "UserNotFoundException") {
+      res.status(404).json({ error: "User not found" });
+    } else {
+      next(error);
+    }
   }
 };
 
