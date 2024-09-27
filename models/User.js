@@ -23,10 +23,6 @@ const userSchema = new Schema(
         "Please enter a valid email",
       ],
     },
-    roles: {
-      type: Object,
-      required: true,
-    },
     phone: { type: String, required: false },
     avatar: { type: String, required: false },
     pro: { type: Boolean, required: false },

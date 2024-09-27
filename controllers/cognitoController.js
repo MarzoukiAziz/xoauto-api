@@ -4,16 +4,14 @@ const jwkToPem = require("jwk-to-pem");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const ROLES_LIST = require("../utils/rolesList");
+const AWS = require("aws-sdk");
 
 //Set user pool credentials.
 const poolData = {
   UserPoolId: process.env.AWS_USER_POOL_ID,
   ClientId: process.env.AWS_CLIENT_ID,
 };
-
 const aws_region = process.env.AWS_REGION;
-
-//Get user pool.
 const userPool = new AmazonCognitoId.CognitoUserPool(poolData);
 
 // Login
@@ -44,7 +42,7 @@ const logIn = async (req, res, next) => {
     cognitoUser.authenticateUser(authenticationDetails, {
       onSuccess: async (result) => {
         try {
-          // Check if the user exists in your database
+          // Check if the user exists in database
           const user = await User.findOne({ email });
           if (!user) {
             return next(new ErrorResponse(userNotFoundMessage, 404));
@@ -60,7 +58,7 @@ const logIn = async (req, res, next) => {
             user,
           });
         } catch (dbError) {
-          return next(dbError); // If there's a DB error, pass it to the next middleware for handling
+          return next(dbError);
         }
       },
       onFailure: (err) => {
@@ -68,7 +66,6 @@ const logIn = async (req, res, next) => {
       },
     });
   } catch (err) {
-    console.log(err);
     return res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -124,14 +121,12 @@ const verifyToken = async (req, res, next) => {
           });
         })
         .catch((err) => {
-          console.log(err);
           res.status(500).json({ error: err });
         });
     } else {
       res.status(400).json({ error: "bad format" });
     }
   } catch (err) {
-    console.log(err);
     res.status(500).json({ error: err });
   }
 };
@@ -154,7 +149,6 @@ const downloadJwk = (token) => {
 const verifyregistrationCode = async (req, res, next) => {
   const { body } = req;
 
-  // Validate request format.
   if (body.user && body.code) {
     const { user, code } = body;
 
@@ -170,14 +164,13 @@ const verifyregistrationCode = async (req, res, next) => {
       // Call cognito confirmRegistration directly
       cognitoUser.confirmRegistration(code, true, (error, result) => {
         if (error) {
-          res.status(400).json({ error });
+          res.status(400).json({ success: false, message: "Code incorrect" });
         } else {
-          res.status(200).json({ result });
+          res.status(200).json({ success: true, message: "Code correct" });
         }
       });
     } catch (error) {
-      console.log(error);
-      res.status(400).json({ error });
+      res.status(400).json({ success: false, message: "Code incorrect" });
     }
   } else {
     res.status(400).json({ error: "bad format" });
@@ -186,18 +179,14 @@ const verifyregistrationCode = async (req, res, next) => {
 
 //Register a new user, and return the data in a promise.
 const signUp = async (req, res, next) => {
-  const { body } = req;
-
-  // Extract the required fields from the request body
-  let { email, user, password } = body;
-
+  let { email, username, password } = req.body;
   try {
-    // Create an attribute list for Cognito
     const attributeList = [];
-
-    // Add name and email attributes
     attributeList.push(
-      new AmazonCognitoId.CognitoUserAttribute({ Name: "name", Value: user })
+      new AmazonCognitoId.CognitoUserAttribute({
+        Name: "name",
+        Value: username,
+      })
     );
     attributeList.push(
       new AmazonCognitoId.CognitoUserAttribute({
@@ -206,29 +195,40 @@ const signUp = async (req, res, next) => {
       })
     );
 
-    // Register the new user in Cognito
     userPool.signUp(email, password, attributeList, null, async (err, data) => {
       if (err) {
+        console.log(err);
         res.status(400).json({ error: err });
       } else {
         // Create a new user in the database
         const newUser = new User({
           id: data.userSub,
-          name: user,
+          name: username,
           email,
-          roles: [ROLES_LIST.ADMIN],
         });
 
         // Save the new user to the database
-        const savedUser = await newUser.save();
+        await newUser.save();
 
-        // Send success response
-        const response = {
-          username: data.user.username,
-          id: data.userSub,
-          success: true,
+        // Add the new user to the Cognito group
+        const cognito = new AWS.CognitoIdentityServiceProvider();
+        const params = {
+          GroupName: "USER",
+          UserPoolId: userPool.userPoolId,
+          Username: email,
         };
-        res.status(200).json({ result: response });
+
+        cognito.adminAddUserToGroup(params, (err, data) => {
+          if (err) {
+            console.log("Error adding user to group:", err);
+            return res.status(400).json({ error: err });
+          }
+
+          const response = {
+            success: true,
+          };
+          res.status(200).json({ result: response });
+        });
       }
     });
   } catch (err) {

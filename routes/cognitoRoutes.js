@@ -8,7 +8,7 @@ const {
 } = require("../controllers/cognitoController");
 
 router.post("/signup", signUp);
-router.post("/code", verifyregistrationCode);
+router.post("/confirm-email", verifyregistrationCode);
 router.post("/login", logIn);
 router.get("/verify", verifyToken);
 

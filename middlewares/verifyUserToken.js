@@ -1,7 +1,13 @@
-const ErrorResponse = require("../utils/errorResponse");
-const jwt = require("jsonwebtoken");
+const CognitoExpress = require("cognito-express");
+const jwt = require("jsonwebtoken"); // Import the jsonwebtoken library
 
-// Middleware for verifying user tokens
+const cognitoExpress = new CognitoExpress({
+  region: process.env.AWS_REGION,
+  cognitoUserPoolId: process.env.AWS_USER_POOL_ID,
+  tokenUse: "access",
+  tokenExpiration: 3600000,
+});
+
 const verifyUserToken = (req, res, next) => {
   let token;
 
@@ -16,27 +22,21 @@ const verifyUserToken = (req, res, next) => {
     // Extract the token from the Authorization header
     token = authHeader.split(" ")[1];
   } else {
-    // Handle logic for other cases when the request doesn't come from a whitelisted origin
-    // Add your custom logic here if needed
-    // ...
+    return res.status(401).send({});
   }
 
-  // Verify the token and decode its payload
-  jwt.verify(token, process.env.SECRET_KEY, async (err, decoded) => {
+  cognitoExpress.validate(token, function (err, response) {
     if (err) {
-      // If the token verification fails, send an invalid token response
-      return next(new ErrorResponse("Invalid token", 403));
+      console.log(err);
+      return res.status(401).send(err);
+    } else {
+      const decoded = jwt.decode(token, { complete: true });
+      req.userId = decoded.payload.sub;
+      req.user = decoded.payload;
+      req.roles = decoded.payload["cognito:groups"] || [];
+      next();
     }
-
-    // Extract user information from the decoded token and attach it to the request object
-    req.userId = decoded.UserInfo.userId;
-    req.user = decoded.UserInfo.user;
-    req.roles = decoded.UserInfo.roles;
-
-    // Proceed to the next middleware
-    next();
   });
 };
 
 module.exports = verifyUserToken;
-
