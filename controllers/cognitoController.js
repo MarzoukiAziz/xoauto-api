@@ -179,7 +179,7 @@ const verifyregistrationCode = async (req, res, next) => {
 
 //Register a new user, and return the data in a promise.
 const signUp = async (req, res, next) => {
-  let { email, username, password } = req.body;
+  let { email, username, phone, password } = req.body;
   try {
     const attributeList = [];
     attributeList.push(
@@ -192,6 +192,12 @@ const signUp = async (req, res, next) => {
       new AmazonCognitoId.CognitoUserAttribute({
         Name: "email",
         Value: email,
+      })
+    );
+    attributeList.push(
+      new AmazonCognitoId.CognitoUserAttribute({
+        Name: "phone_number",
+        Value: phone,
       })
     );
 
