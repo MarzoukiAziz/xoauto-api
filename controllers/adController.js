@@ -26,7 +26,6 @@ const getAds = async (req, res, next) => {
       mileageMax = Infinity,
       seats = 0,
       color = "",
-      proUser = "false",
       crit_air = "",
       horsepowerMin = 0,
       horsepowerMax = Infinity,
@@ -166,14 +165,22 @@ const getAdById = async (req, res, next) => {
   }
 };
 
-const getTodayAds = async (req, res, next) => {
+const getAdsByIds = async (req, res, next) => {
   try {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const { adsId } = req.query; // Retrieve comma-separated ad IDs from query params
 
-    const ads = await Ad.find({
-      createdAt: { $gte: today },
-    });
+    if (!adsId) {
+      return res.status(400).json({ message: "No ad IDs provided" });
+    }
+    const adIdsArray = adsId
+      .split(",")
+      .map((id) => mongoose.Types.ObjectId(id));
+
+    const ads = await Ad.find({ _id: { $in: adIdsArray } });
+
+    if (!ads || ads.length === 0) {
+      return res.status(404).json({ message: "Ads not found" });
+    }
 
     res.status(200).json(ads);
   } catch (error) {
@@ -226,7 +233,7 @@ const deleteAd = async (req, res, next) => {
 module.exports = {
   getAds,
   getAdById,
-  getTodayAds,
+  getAdsByIds,
   createAd,
   updateAd,
   deleteAd,
