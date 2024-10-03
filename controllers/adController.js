@@ -112,7 +112,6 @@ const getAds = async (req, res, next) => {
 
     // Count total ads based on the filters
     const count = await Ad.countDocuments(query);
-    console.log(count);
     res.status(200).json({ ads, count });
   } catch (error) {
     next(error);
