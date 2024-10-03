@@ -55,6 +55,7 @@ const AdSchema = new mongoose.Schema(
     phone_number: { type: String, required: false },
     mask_phone: { type: Boolean, default: false },
     active: { type: Boolean, default: true },
+    sold: { type: Boolean, default: false },
     views: { type: Number, required: false },
   },
   { timestamps: true }
