@@ -33,7 +33,7 @@ const getAds = async (req, res, next) => {
       courantAC = "",
       courantDC = "",
     } = req.query;
-
+    console.log(req.query);
     // Create the base query object
     const query = {};
 
@@ -211,7 +211,6 @@ const getSimilars = async (req, res, next) => {
 
         result.push(d);
       }
-      console.log(result.length);
       res.status(200).send(result);
     } catch (error) {
       res.status(500).json({

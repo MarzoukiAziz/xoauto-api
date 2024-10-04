@@ -8,7 +8,7 @@ const commentRoutes = require("./commentRoutes");
 const adRoutes = require("./adRoutes");
 const adViewRoutes = require("./adViewRoutes");
 const inshightsRoutes = require("./inshightsRoutes");
-const articleCategoryRoutes = require("./articleCategoryRoutes");
+const articleCategoryRoutes = require("./settings/articleCategoryRoutes");
 const cognitoRoutes = require("./cognitoRoutes");
 
 router.use("/v1/cognito", cognitoRoutes);
