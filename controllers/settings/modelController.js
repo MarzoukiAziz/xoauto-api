@@ -3,7 +3,7 @@ const Model = require("../../models/settings/Model");
 // Get all Models
 const getModels = async (req, res, next) => {
   try {
-    const models = await Model.find();
+    const models = await Model.find().sort({ name: 1 });
     res.status(200).json(models);
   } catch (error) {
     next(error);
@@ -14,7 +14,9 @@ const getModels = async (req, res, next) => {
 const getModelsByBrandIds = async (req, res, next) => {
   const { brandIds } = req.query;
   try {
-    const models = await Model.find({ brandId: { $in: brandIds } });
+    const models = await Model.find({ brandId: { $in: brandIds } }).sort({
+      name: 1,
+    });
     res.status(200).json(models);
   } catch (error) {
     next(error);
