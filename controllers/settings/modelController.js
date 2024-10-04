@@ -17,7 +17,6 @@ const getModelsWithBrand = async (req, res, next) => {
       path: "brandId",
       select: "name",
     });
-    console.log(models);
     res.status(200).json(models);
   } catch (error) {
     next(error);

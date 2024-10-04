@@ -3,7 +3,7 @@ const Energy = require("../../models/settings/Energy");
 // Get all Energies
 const getEnergies = async (req, res, next) => {
   try {
-    const energies = await Energy.find();
+    const energies = await Energy.find().sort({ name_fr: 1 });
     res.status(200).json(energies);
   } catch (error) {
     next(error);

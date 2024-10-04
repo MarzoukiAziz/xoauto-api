@@ -3,7 +3,7 @@ const Category = require("../../models/settings/Category");
 // Get all Categories
 const getCategories = async (req, res, next) => {
   try {
-    const categories = await Category.find();
+    const categories = await Category.find().sort({ name_fr: 1 });
     res.status(200).json(categories);
   } catch (error) {
     next(error);

@@ -3,7 +3,7 @@ const Region = require("../../models/settings/Region");
 // Get all Regions
 const getRegions = async (req, res, next) => {
   try {
-    const regions = await Region.find();
+    const regions = await Region.find().sort({ name_fr: 1 });
     res.status(200).json(regions);
   } catch (error) {
     next(error);

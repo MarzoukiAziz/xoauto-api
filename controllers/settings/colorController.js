@@ -3,7 +3,7 @@ const Color = require("../../models/settings/Color");
 // Get all Colors
 const getColors = async (req, res, next) => {
   try {
-    const colors = await Color.find();
+    const colors = await Color.find().sort({ name_fr: 1 });
     res.status(200).json(colors);
   } catch (error) {
     next(error);

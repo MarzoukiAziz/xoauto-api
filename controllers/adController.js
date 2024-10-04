@@ -33,7 +33,6 @@ const getAds = async (req, res, next) => {
       courantAC = "",
       courantDC = "",
     } = req.query;
-    console.log(req.query);
     // Create the base query object
     const query = {};
 
