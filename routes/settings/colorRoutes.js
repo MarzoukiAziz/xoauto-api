@@ -1,31 +1,28 @@
 const express = require("express");
 const {
-  getModels,
-  getModelsByBrandIds,
-  getModelsWithBrand,
-  createModel,
-  deleteModel,
-} = require("../../controllers/settings/modelController");
+  getColors,
+  createColor,
+  deleteColor,
+} = require("../../controllers/settings/colorController");
 const verifyUserToken = require("../../middlewares/verifyUserToken");
 const verifyUserRoles = require("../../middlewares/verifyUserRoles");
 const ROLES_LIST = require("../../utils/rolesList");
 
 const router = express.Router();
 
-router.get("/", getModels);
-router.get("/brands", getModelsWithBrand);
-router.get("/selected-brands", getModelsByBrandIds);
+router.get("/", getColors);
 router.post(
   "/",
   verifyUserToken,
   verifyUserRoles(ROLES_LIST.ADMIN),
-  createModel
+  createColor
 );
+
 router.delete(
   "/:id",
   verifyUserToken,
   verifyUserRoles(ROLES_LIST.ADMIN),
-  deleteModel
+  deleteColor
 );
 
 module.exports = router;
