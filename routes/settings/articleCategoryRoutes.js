@@ -4,10 +4,10 @@ const {
   createCategory,
   deleteCategory,
   getCategoryNames,
-} = require("../controllers/articleCategoryController");
-const verifyUserToken = require("../middlewares/verifyUserToken");
-const verifyUserRoles = require("../middlewares/verifyUserRoles");
-const ROLES_LIST = require("../utils/rolesList");
+} = require("../../controllers/settings/articleCategoryController");
+const verifyUserToken = require("../../middlewares/verifyUserToken");
+const verifyUserRoles = require("../../middlewares/verifyUserRoles");
+const ROLES_LIST = require("../../utils/rolesList");
 
 const router = express.Router();
 
