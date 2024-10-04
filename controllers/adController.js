@@ -187,6 +187,42 @@ const getAdsByIds = async (req, res, next) => {
   }
 };
 
+const getSimilars = async (req, res, next) => {
+  try {
+    const { category, adId, price } = req.query;
+    const minPrice = 0.7 * price;
+    const maxPrice = 1.3 * price;
+    const adsQuery = Ad.find({
+      price: {
+        $gte: minPrice,
+        $lte: maxPrice,
+      },
+      category: category,
+      active: true,
+      sold: false,
+    }).sort({ createdAt: -1 });
+
+    const result = [];
+
+    try {
+      const documents = await adsQuery.limit(8).exec();
+      for (const d of documents) {
+        if (d._id == adId) continue;
+
+        result.push(d);
+      }
+      console.log(result.length);
+      res.status(200).send(result);
+    } catch (error) {
+      res.status(500).json({
+        message: "Fetching ads failed!" + error,
+      });
+    }
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+};
+
 const createAd = async (req, res, next) => {
   try {
     const ad = new Ad(req.body);
@@ -233,6 +269,7 @@ module.exports = {
   getAds,
   getAdById,
   getAdsByIds,
+  getSimilars,
   createAd,
   updateAd,
   deleteAd,

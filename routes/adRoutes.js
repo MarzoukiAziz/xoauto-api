@@ -6,6 +6,7 @@ const {
   createAd,
   updateAd,
   deleteAd,
+  getSimilars,
 } = require("../controllers/adController");
 const verifyUserRoles = require("../middlewares/verifyUserRoles");
 const verifyUserToken = require("../middlewares/verifyUserToken");
@@ -15,6 +16,7 @@ const router = express.Router();
 
 router.get("/", getAds);
 router.get("/selected", getAdsByIds);
+router.get("/similars", getSimilars);
 router.get("/:id", getAdById);
 router.post("/", verifyUserToken, verifyUserRoles(ROLES_LIST.USER), createAd);
 router.put("/:id", verifyUserToken, verifyUserRoles(ROLES_LIST.USER), updateAd);
