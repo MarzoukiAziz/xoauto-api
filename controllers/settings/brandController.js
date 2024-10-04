@@ -3,7 +3,7 @@ const Brand = require("../../models/settings/Brand");
 // Get all Brands
 const getBrands = async (req, res, next) => {
   try {
-    const brands = await Brand.find();
+    const brands = await Brand.find().sort({ name: 1 });
     res.status(200).json(brands);
   } catch (error) {
     next(error);
