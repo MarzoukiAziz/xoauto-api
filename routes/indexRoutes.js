@@ -16,6 +16,7 @@ const EnergyRoutes = require("./settings/energyRoutes");
 const CategoryRoutes = require("./settings/categoryRoutes");
 const RegionRoutes = require("./settings/regionRoutes");
 const ColorRoutes = require("./settings/colorRoutes");
+const SettingRoutes = require("./settings/settingRoutes");
 
 router.use("/v1/cognito", cognitoRoutes);
 router.use("/v1/user", userRoutes);
@@ -24,6 +25,7 @@ router.use("/v1/comment", commentRoutes);
 router.use("/v1/ads", adRoutes);
 router.use("/v1/ad-views", adViewRoutes);
 router.use("/v1/insights", inshightsRoutes);
+router.use("/v1/settings/", SettingRoutes);
 router.use("/v1/settings/article-categories", articleCategoryRoutes);
 router.use("/v1/settings/brands", BrandRoutes);
 router.use("/v1/settings/models", ModelRoutes);

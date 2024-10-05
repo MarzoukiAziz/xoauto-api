@@ -7,37 +7,41 @@ const getAds = async (req, res, next) => {
     const {
       size = 9,
       page = 1,
+      sellerType,
       sort = "desc",
       includeViews = "false",
       uid = "",
       period = "",
-      type = "",
-      category = "",
-      fuel_type = "",
-      brand = "",
-      model = "",
-      priceMin = 0,
-      priceMax = Infinity,
-      wltpMin = 0,
-      wltpMax = Infinity,
-      yearMin = 1900,
-      yearMax = new Date().getFullYear(),
-      mileageMin = 0,
-      mileageMax = Infinity,
-      seats = 0,
-      color = "",
-      crit_air = "",
-      horsepowerMin = 0,
-      horsepowerMax = Infinity,
-      options = {},
-      courantAC = "",
-      courantDC = "",
+      category,
+      fuel_type,
+      seats,
+      brand,
+      model,
+      color,
+      region,
+      priceMin,
+      priceMax,
+      autonomyMin,
+      autonomyMax,
+      yearMin,
+      yearMax,
+      mileageMin,
+      mileageMax,
     } = req.query;
+
     // Create the base query object
     const query = {};
 
     // Filter by user ID if provided
     if (uid) query.uid = uid;
+
+    // Filter by seller type (professional or individual)
+    if (sellerType) {
+      pro = [];
+      if (sellerType.includes("Pro")) pro.push(true);
+      if (sellerType.includes("Particulier")) pro.push(false);
+      query.pro = pro;
+    }
 
     // Filter by date period
     if (period) {
@@ -54,42 +58,39 @@ const getAds = async (req, res, next) => {
     }
 
     // Add other filters based on the ad model fields
-    if (type) query.type = type;
-    if (category) query.category = category;
-    if (fuel_type) query.fuel_type = fuel_type;
-    if (brand) query.brand = brand;
-    if (model) query.model = model;
+    if (brand) query.brand = { $in: brand };
+    if (model) query.model = { $in: model };
+    if (category) query.category = { $in: category };
+    if (fuel_type) query.fuel_type = { $in: fuel_type };
+    if (seats) query.seats = { $in: seats };
+    if (color) query.color = { $in: color };
+    if (region) query.region = { $in: region };
     if (priceMin || priceMax) query.price = { $gte: priceMin, $lte: priceMax };
-    if (wltpMin || wltpMax)
-      query.autonomy_wltp_km = { $gte: wltpMin, $lte: wltpMax };
+    if (autonomyMin || autonomyMax)
+      query.autonomy_wltp_km = { $gte: autonomyMin, $lte: autonomyMax };
     if (yearMin || yearMax)
       query["first_registration.year"] = { $gte: yearMin, $lte: yearMax };
     if (mileageMin || mileageMax)
       query.mileage = { $gte: mileageMin, $lte: mileageMax };
-    if (seats) query.seats = seats;
-    if (color) query.color = color;
-    if (crit_air) query.crit_air = crit_air;
-    if (horsepowerMin || horsepowerMax)
-      query.horsepower = { $gte: horsepowerMin, $lte: horsepowerMax };
-    if (courantAC) query["courant.AC"] = courantAC;
-    if (courantDC) query["courant.DC"] = courantDC;
 
-    // Filter for vehicle options
-    for (const [key, value] of Object.entries(options)) {
-      if (value === "true") {
-        query[`options_vehicule.${key}`] = true;
-      }
+    // Determine sorting based on the sort query parameter
+    let sortOption = {};
+    if (sort === "asc") {
+      sortOption = { createdAt: 1 }; // Sort by date ascending
+    } else if (sort === "desc") {
+      sortOption = { createdAt: -1 }; // Sort by date descending
+    } else if (sort === "price-asc") {
+      sortOption = { price: 1 }; // Sort by price ascending
+    } else if (sort === "price-desc") {
+      sortOption = { price: -1 }; // Sort by price descending
     }
 
-    // Fetch ads with the constructed query
+    // Fetch ads with the constructed query and sorting options
     const adsQuery = Ad.find(query)
-      .sort({ createdAt: sort === "asc" ? 1 : -1 })
+      .sort(sortOption)
       .skip(size * (page - 1))
-      .limit(parseInt(size))
-      .populate({
-        path: "uid",
-        select: "name",
-      });
+      .limit(parseInt(size));
+
     let ads = await adsQuery;
 
     // Include views if requested
