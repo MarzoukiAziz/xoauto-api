@@ -14,6 +14,7 @@ const getSettings = async (req, res, next) => {
     const categories = await Category.find().sort({ name_fr: 1 });
     const energies = await Energy.find().sort({ name_fr: 1 });
     const regions = await Region.find().sort({ name_fr: 1 });
+    const equipment = await Equipment.findOne();
     const settings = {
       brands,
       models,
@@ -21,6 +22,7 @@ const getSettings = async (req, res, next) => {
       categories,
       energies,
       regions,
+      equipment,
     };
 
     res.status(200).json(settings);
