@@ -16,6 +16,7 @@ const EnergyRoutes = require("./settings/energyRoutes");
 const CategoryRoutes = require("./settings/categoryRoutes");
 const RegionRoutes = require("./settings/regionRoutes");
 const ColorRoutes = require("./settings/colorRoutes");
+const EquipmentRoutes = require("./settings/equipmentsRoutes");
 const SettingRoutes = require("./settings/settingRoutes");
 
 router.use("/v1/cognito", cognitoRoutes);
@@ -33,5 +34,6 @@ router.use("/v1/settings/energies", EnergyRoutes);
 router.use("/v1/settings/categories", CategoryRoutes);
 router.use("/v1/settings/regions", RegionRoutes);
 router.use("/v1/settings/colors", ColorRoutes);
+router.use("/v1/settings/equipments", EquipmentRoutes);
 
 module.exports = router;
