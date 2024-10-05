@@ -23,24 +23,28 @@ const AdSchema = new mongoose.Schema(
     horsepower: { type: Number, required: false },
     power_kw: { type: Number, required: false },
     autonomy_wltp_km: { type: Number, required: false },
+    equipments: {
+      safety: {
+        type: [String],
+        default: [],
+      },
+      outdoor: {
+        type: [String],
+        default: [],
+      },
+      indoor: {
+        type: [String],
+        default: [],
+      },
+      functional: {
+        type: [String],
+        default: [],
+      },
+    },
     options_vehicule: {
-      heads_up_display: { type: Boolean, default: false },
-      parking_assist: { type: Boolean, default: false },
-      tow_hitch: { type: Boolean, default: false },
-      roof_racks: { type: Boolean, default: false },
-      bluetooth: { type: Boolean, default: false },
-      rear_camera: { type: Boolean, default: false },
-      automatic_climate_control: { type: Boolean, default: false },
-      gps: { type: Boolean, default: false },
       non_smoker: { type: Boolean, default: false },
       first_hand: { type: Boolean, default: false },
-      rear_radar: { type: Boolean, default: false },
-      leather_seats: { type: Boolean, default: false },
-      heated_seats: { type: Boolean, default: false },
       manufacturer_warranty: { type: Boolean, default: false },
-      sound_system: { type: Boolean, default: false },
-      sunroof: { type: Boolean, default: false },
-      panoramic_roof: { type: Boolean, default: false },
       others: [{ type: String }],
     },
     courant: {
