@@ -18,6 +18,7 @@ const RegionRoutes = require("./settings/regionRoutes");
 const ColorRoutes = require("./settings/colorRoutes");
 const EquipmentRoutes = require("./settings/equipmentsRoutes");
 const SettingRoutes = require("./settings/settingRoutes");
+const cloudinaryRoute = require("./cloudinaryRoutes.js");
 
 router.use("/v1/cognito", cognitoRoutes);
 router.use("/v1/user", userRoutes);
@@ -35,5 +36,6 @@ router.use("/v1/settings/categories", CategoryRoutes);
 router.use("/v1/settings/regions", RegionRoutes);
 router.use("/v1/settings/colors", ColorRoutes);
 router.use("/v1/settings/equipments", EquipmentRoutes);
+router.use("/v1/cloudinary", cloudinaryRoute);
 
 module.exports = router;
