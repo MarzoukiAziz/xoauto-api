@@ -242,4 +242,45 @@ const signUp = async (req, res, next) => {
   }
 };
 
-module.exports = { verifyregistrationCode, signUp, logIn, verifyToken };
+const changeUserAccess = async (req, res, next) => {
+  try {
+    let { username, action } = req.body;
+    const params = {
+      UserPoolId: poolData.UserPoolId,
+      Username: username,
+    };
+    const cognito = new AWS.CognitoIdentityServiceProvider();
+    if (action == "disable") {
+      cognito.adminDisableUser(params, (err, data) => {
+        if (err) {
+          return res
+            .status(404)
+            .json({ message: "Error disabling user: " + err });
+        } else {
+          res.status(200).json("User disabled successfully");
+        }
+      });
+    } else {
+      cognito.adminEnableUser(params, (err, data) => {
+        if (err) {
+          return res
+            .status(404)
+            .json({ message: "Error enabling user: " + err });
+        } else {
+          res.status(200).json("User enabled successfully");
+        }
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
+
+module.exports = {
+  verifyregistrationCode,
+  signUp,
+  logIn,
+  verifyToken,
+  changeUserAccess,
+};
