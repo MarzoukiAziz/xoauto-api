@@ -1,6 +1,7 @@
 const Ad = require("../models/Ad");
 const AdView = require("../models/AdView");
 const mongoose = require("mongoose");
+const User = require("../models/User");
 
 const getAds = async (req, res, next) => {
   try {
@@ -225,6 +226,8 @@ const getSimilars = async (req, res, next) => {
 const createAd = async (req, res, next) => {
   try {
     const ad = new Ad(req.body);
+    const user = await User.findOne({ _id: ad.uid });
+    ad.pro = user.pro;
     await ad.save();
     res.status(201).json(ad);
   } catch (error) {
