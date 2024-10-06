@@ -8,7 +8,7 @@ const userSchema = new Schema(
     },
     name: {
       type: String,
-      required: false,
+      required: true,
     },
     email: {
       type: String,
@@ -21,8 +21,11 @@ const userSchema = new Schema(
       ],
     },
     avatar: { type: String, required: false },
-    pro: { type: Boolean, required: false },
-    favorite_ads: [{ type: String }],
+    pro: { type: Boolean, default: false },
+    favorite_ads: {
+      type: [String],
+      default: [],
+    },
     lastLogin: { type: Date, default: null },
   },
   {
