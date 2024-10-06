@@ -92,10 +92,15 @@ const getAds = async (req, res, next) => {
       .skip(size * (page - 1))
       .limit(parseInt(size));
 
-    let ads = await adsQuery;
+    let ads = [];
 
     // Include views if requested
     if (includeViews === "true") {
+      const adsQueryWithUser = adsQuery.populate({
+        path: "uid",
+        select: "name email createdAt pro avatar",
+      });
+      ads = await adsQueryWithUser;
       const adIds = ads.map((ad) => ad._id);
       const viewCounts = await AdView.aggregate([
         { $match: { adId: { $in: adIds } } },
@@ -109,6 +114,8 @@ const getAds = async (req, res, next) => {
         ...ad.toObject(),
         views: viewCountMap[ad._id.toString()] || 0,
       }));
+    } else {
+      ads = await adsQuery;
     }
 
     // Count total ads based on the filters
@@ -241,7 +248,12 @@ const updateAd = async (req, res, next) => {
     const updateData = { ...req.body };
     delete updateData.views;
 
-    const ad = await Ad.findByIdAndUpdate(id, updateData, { new: true });
+    await Ad.findByIdAndUpdate(id, updateData, { new: true });
+    const ad = await Ad.findById(id).populate({
+      path: "uid",
+      select: "name email createdAt pro avatar",
+    });
+
     if (!ad) {
       return res.status(404).json({ message: "Ad not found" });
     }
