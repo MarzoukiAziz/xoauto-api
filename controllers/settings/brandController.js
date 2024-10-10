@@ -10,6 +10,22 @@ const getBrands = async (req, res, next) => {
   }
 };
 
+// get brand by name
+const getBrandByName = async (req, res, next) => {
+  try {
+    const { name } = req.params;
+    const brand = await Brand.findOne({ name: name });
+
+    if (!brand) {
+      return res.status(404).json({ message: "Brand not found" });
+    }
+    console.log(brand);
+    res.status(200).json(brand);
+  } catch (error) {
+    next(error);
+  }
+};
+
 // Create a new brand
 const createBrand = async (req, res, next) => {
   try {
@@ -38,6 +54,7 @@ const deleteBrand = async (req, res, next) => {
 
 module.exports = {
   getBrands,
+  getBrandByName,
   createBrand,
   deleteBrand,
 };
