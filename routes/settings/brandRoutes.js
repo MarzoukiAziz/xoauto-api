@@ -1,6 +1,7 @@
 const express = require("express");
 const {
   getBrands,
+  getBrandByName,
   createBrand,
   deleteBrand,
 } = require("../../controllers/settings/brandController");
@@ -11,6 +12,8 @@ const ROLES_LIST = require("../../utils/rolesList");
 const router = express.Router();
 
 router.get("/", getBrands);
+router.get("/:name", getBrandByName);
+
 router.post(
   "/",
   verifyUserToken,
