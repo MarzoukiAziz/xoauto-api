@@ -1,6 +1,5 @@
 const NewAd = require("../models/NewAd");
 const mongoose = require("mongoose");
-const User = require("../models/User");
 
 const getNewAds = async (req, res, next) => {
   try {
@@ -98,35 +97,55 @@ const getNewAdsByIds = async (req, res, next) => {
     next(error);
   }
 };
-
 const getSimilars = async (req, res, next) => {
   try {
-    const { category, newNewAdId, price } = req.query;
+    const { category, model, price } = req.query;
     const minPrice = 0.7 * price;
     const maxPrice = 1.3 * price;
+
     const newNewAdsQuery = NewAd.find({
       price: {
         $gte: minPrice,
         $lte: maxPrice,
       },
       category: category,
-      active: true,
-      sold: false,
+      model: { $ne: model }, // Exclude ads with the same model
     });
 
-    const result = [];
-
     try {
-      const documents = await newNewAdsQuery.limit(8).exec();
-      for (const d of documents) {
-        if (d._id == newNewAdId) continue;
+      const documents = await newNewAdsQuery.exec(); // Get all documents without limit first
+      const result = [];
 
-        result.push(d);
+      for (const d of documents) {
+        const version = {
+          _id: d._id,
+          price: d.price,
+          version: d.version,
+          preview: d.preview,
+        };
+
+        // Check if there's an existing model entry in the result array
+        const existingModel = result.find((item) => item.model === d.model);
+
+        if (existingModel) {
+          // If model already exists, push the new version to the versions array
+          existingModel.versions.push(version);
+        } else {
+          // If model does not exist, create a new entry
+          result.push({
+            brand: d.brand,
+            model: d.model,
+            versions: [version],
+          });
+        }
       }
-      res.status(200).send(result);
+
+      // Apply the limit after regrouping
+      const limitedResults = result.slice(0, 8); // Limit to 8 grouped ads
+      res.status(200).json({ ads: limitedResults });
     } catch (error) {
       res.status(500).json({
-        message: "Fetching newNewAds failed!" + error,
+        message: "Fetching newNewAds failed! " + error,
       });
     }
   } catch (error) {
@@ -192,11 +211,11 @@ const getAdsByBrand = async (req, res, next) => {
     if (sort === "price-desc") {
       sortOption = { price: -1 };
     }
-
     // Fetch the ads filtered by brand and sorted by price
     const adsQuery = NewAd.find(query).sort(sortOption);
 
     const ads = await adsQuery;
+    console.log(ads);
 
     // Group ads by model, and collect their versions
     const groupedAds = ads.reduce((acc, ad) => {

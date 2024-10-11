@@ -19,7 +19,6 @@ const getBrandByName = async (req, res, next) => {
     if (!brand) {
       return res.status(404).json({ message: "Brand not found" });
     }
-    console.log(brand);
     res.status(200).json(brand);
   } catch (error) {
     next(error);
