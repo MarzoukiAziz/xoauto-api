@@ -178,10 +178,13 @@ const deleteNewAd = async (req, res, next) => {
 
 const getAdsByBrand = async (req, res, next) => {
   try {
-    const { brand, sort } = req.query;
+    const { brand, model, sort } = req.query;
     const query = {};
     if (brand) {
-      query.brand = { $in: brand };
+      query.brand = brand;
+    }
+    if (model) {
+      query.model = model;
     }
 
     let sortOption = { price: 1 };
@@ -198,8 +201,8 @@ const getAdsByBrand = async (req, res, next) => {
     // Group ads by model, and collect their versions
     const groupedAds = ads.reduce((acc, ad) => {
       const existingModel = acc.find((item) => item.model === ad.model);
-
       const version = {
+        _id: ad._id,
         price: ad.price,
         version: ad.version,
         category: ad.category,
@@ -226,7 +229,6 @@ const getAdsByBrand = async (req, res, next) => {
           versions: [version],
         });
       }
-
       return acc;
     }, []);
 
