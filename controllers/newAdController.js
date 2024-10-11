@@ -77,12 +77,12 @@ const getNewAdById = async (req, res, next) => {
 
 const getNewAdsByIds = async (req, res, next) => {
   try {
-    const { newNewAdsId } = req.query;
+    const { versionsIds } = req.query;
 
-    if (!newNewAdsId) {
-      return res.status(400).json({ message: "No newNewAd IDs provided" });
+    if (!versionsIds) {
+      return res.status(400).json({ message: "No versionsIds provided" });
     }
-    const newNewAdIdsArray = newNewAdsId
+    const newNewAdIdsArray = versionsIds
       .split(",")
       .map((id) => mongoose.Types.ObjectId(id));
 
@@ -215,7 +215,6 @@ const getAdsByBrand = async (req, res, next) => {
     const adsQuery = NewAd.find(query).sort(sortOption);
 
     const ads = await adsQuery;
-    console.log(ads);
 
     // Group ads by model, and collect their versions
     const groupedAds = ads.reduce((acc, ad) => {
