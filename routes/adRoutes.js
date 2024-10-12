@@ -9,6 +9,8 @@ const {
   getSimilars,
   updateAdStatus,
   deleteAdByUser,
+  getUserSavedAds,
+  updateSavedAds,
 } = require("../controllers/adController");
 const verifyUserRoles = require("../middlewares/verifyUserRoles");
 const verifyUserToken = require("../middlewares/verifyUserToken");
@@ -19,6 +21,12 @@ const router = express.Router();
 router.get("/search", getAds);
 router.get("/selected", getAdsByIds);
 router.get("/similars", getSimilars);
+router.get(
+  "/saved/:uid",
+  verifyUserToken,
+  verifyUserRoles(ROLES_LIST.USER),
+  getUserSavedAds
+);
 router.get("/:id", getAdById);
 
 router.put(
@@ -27,6 +35,14 @@ router.put(
   verifyUserRoles(ROLES_LIST.USER),
   updateAdStatus
 );
+
+router.put(
+  "/saved/:uid",
+  verifyUserToken,
+  verifyUserRoles(ROLES_LIST.USER),
+  updateSavedAds
+);
+
 router.delete(
   "/user/:id",
   verifyUserToken,

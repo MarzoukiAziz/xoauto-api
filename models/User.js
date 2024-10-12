@@ -22,7 +22,7 @@ const userSchema = new Schema(
     },
     avatar: { type: String, required: false },
     pro: { type: Boolean, default: false },
-    favorite_ads: {
+    saved_ads: {
       type: [String],
       default: [],
     },
