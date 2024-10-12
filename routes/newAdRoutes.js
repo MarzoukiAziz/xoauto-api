@@ -15,7 +15,7 @@ const ROLES_LIST = require("../utils/rolesList");
 
 const router = express.Router();
 
-router.get("/", getNewAds);
+router.get("/search", getNewAds);
 router.get("/brand", getAdsByBrand);
 router.get("/selected", getNewAdsByIds);
 router.get("/similars", getSimilars);
