@@ -27,7 +27,6 @@ const verifyUserToken = (req, res, next) => {
 
   cognitoExpress.validate(token, function (err, response) {
     if (err) {
-      console.log(err);
       return res.status(401).send(err);
     } else {
       const decoded = jwt.decode(token, { complete: true });
