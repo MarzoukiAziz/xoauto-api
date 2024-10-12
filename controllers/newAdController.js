@@ -6,7 +6,7 @@ const getNewAds = async (req, res, next) => {
     const {
       size = 9,
       page = 1,
-      sort = "desc",
+      sort = "price-asc",
       category,
       fuel_type,
       seats,
@@ -18,10 +18,8 @@ const getNewAds = async (req, res, next) => {
       autonomyMax,
     } = req.query;
 
-    // Create the base query object
     const query = {};
 
-    // NewAdd other filters based on the newNewAd model fields
     if (brand) query.brand = { $in: brand };
     if (model) query.model = { $in: model };
     if (category) query.category = { $in: category };
@@ -30,30 +28,50 @@ const getNewAds = async (req, res, next) => {
     if (priceMin || priceMax) query.price = { $gte: priceMin, $lte: priceMax };
     if (autonomyMin || autonomyMax)
       query.autonomy_wltp_km = { $gte: autonomyMin, $lte: autonomyMax };
-    // Determine sorting based on the sort query parameter
-    let sortOption = {};
-    if (sort === "asc") {
-      sortOption = { createdAt: 1 }; // Sort by date ascending
-    } else if (sort === "desc") {
-      sortOption = { createdAt: -1 }; // Sort by date descending
-    } else if (sort === "price-asc") {
-      sortOption = { price: 1 }; // Sort by price ascending
-    } else if (sort === "price-desc") {
-      sortOption = { price: -1 }; // Sort by price descending
+
+    let sortOption = { price: 1 };
+    if (sort === "price-desc") {
+      sortOption = { price: -1 };
     }
 
-    // Fetch newNewAds with the constructed query and sorting options
-    const newNewAdsQuery = NewAd.find(query)
-      .sort(sortOption)
-      .skip(size * (page - 1))
-      .limit(parseInt(size));
+    const newNewAds = await NewAd.find(query).sort(sortOption);
 
-    let newNewAds = [];
-    newNewAds = await newNewAdsQuery;
+    const groupedAds = newNewAds.reduce((acc, ad) => {
+      const existingModel = acc.find((item) => item.model === ad.model);
+      const version = {
+        _id: ad._id,
+        price: ad.price,
+        version: ad.version,
+        category: ad.category,
+        fuel_type: ad.fuel_type,
+        seats: ad.seats,
+        horsepower: ad.horsepower,
+        power_kw: ad.power_kw,
+        autonomy_wltp_km: ad.autonomy_wltp_km,
+        technical_sheet: ad.technical_sheet,
+        preview: ad.preview,
+        photos: ad.photos,
+        promo: ad.promo,
+        new: ad.new,
+      };
 
-    // Count total newNewAds based on the filters
-    const count = await NewAd.countDocuments(query);
-    res.status(200).json({ ads: newNewAds, count });
+      if (existingModel) {
+        existingModel.versions.push(version);
+      } else {
+        acc.push({
+          brand: ad.brand,
+          model: ad.model,
+          versions: [version],
+        });
+      }
+      return acc;
+    }, []);
+
+    const totalCount = groupedAds.length;
+
+    const paginatedAds = groupedAds.slice((page - 1) * size, page * size);
+
+    res.status(200).json({ models: paginatedAds, count: totalCount });
   } catch (error) {
     next(error);
   }
@@ -109,11 +127,11 @@ const getSimilars = async (req, res, next) => {
         $lte: maxPrice,
       },
       category: category,
-      model: { $ne: model }, // Exclude ads with the same model
+      model: { $ne: model },
     });
 
     try {
-      const documents = await newNewAdsQuery.exec(); // Get all documents without limit first
+      const documents = await newNewAdsQuery.exec();
       const result = [];
 
       for (const d of documents) {
@@ -124,14 +142,11 @@ const getSimilars = async (req, res, next) => {
           preview: d.preview,
         };
 
-        // Check if there's an existing model entry in the result array
         const existingModel = result.find((item) => item.model === d.model);
 
         if (existingModel) {
-          // If model already exists, push the new version to the versions array
           existingModel.versions.push(version);
         } else {
-          // If model does not exist, create a new entry
           result.push({
             brand: d.brand,
             model: d.model,
@@ -140,8 +155,7 @@ const getSimilars = async (req, res, next) => {
         }
       }
 
-      // Apply the limit after regrouping
-      const limitedResults = result.slice(0, 8); // Limit to 8 grouped ads
+      const limitedResults = result.slice(0, 8);
       res.status(200).json({ ads: limitedResults });
     } catch (error) {
       res.status(500).json({
@@ -211,12 +225,11 @@ const getAdsByBrand = async (req, res, next) => {
     if (sort === "price-desc") {
       sortOption = { price: -1 };
     }
-    // Fetch the ads filtered by brand and sorted by price
+
     const adsQuery = NewAd.find(query).sort(sortOption);
 
     const ads = await adsQuery;
 
-    // Group ads by model, and collect their versions
     const groupedAds = ads.reduce((acc, ad) => {
       const existingModel = acc.find((item) => item.model === ad.model);
       const version = {
@@ -237,10 +250,8 @@ const getAdsByBrand = async (req, res, next) => {
       };
 
       if (existingModel) {
-        // If model already exists, push the new version to the versions array
         existingModel.versions.push(version);
       } else {
-        // If model does not exist, create a new entry
         acc.push({
           brand: ad.brand,
           model: ad.model,

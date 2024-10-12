@@ -5,7 +5,6 @@ const User = require("../models/User");
 const createAdComment = async (req, res, next) => {
   try {
     const adComment = new AdComment(req.body);
-    console.log(req.body);
     await adComment.save();
 
     const { versions } = req.query;
