@@ -86,6 +86,10 @@ const getAds = async (req, res, next) => {
       sortOption = { price: -1 }; // Sort by price descending
     }
 
+    if (includeViews !== "true") {
+      query.active = true;
+    }
+
     // Fetch ads with the constructed query and sorting options
     const adsQuery = Ad.find(query)
       .sort(sortOption)
@@ -279,6 +283,57 @@ const deleteAd = async (req, res, next) => {
   }
 };
 
+const updateAdStatus = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { uid, status } = req.query;
+
+    const ad = await Ad.findById(id);
+
+    if (!ad) {
+      return res.status(404).json({ message: "Ad not found" });
+    }
+
+    if (ad.uid != uid) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    ad.sold = status;
+
+    await Ad.findByIdAndUpdate(id, ad, { new: true });
+    const updatedAd = await Ad.findById(id).populate({
+      path: "uid",
+      select: "name email createdAt pro avatar",
+    });
+
+    res.status(200).json(updatedAd);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const deleteAdByUser = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { uid } = req.query;
+
+    const ad = await Ad.findById(id);
+
+    if (!ad) {
+      return res.status(404).json({ message: "Ad not found" });
+    }
+
+    if (ad.uid != uid) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const deletedAd = await Ad.findByIdAndDelete(id);
+
+    res.status(200).json(deletedAd);
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getAds,
   getAdById,
@@ -287,4 +342,6 @@ module.exports = {
   createAd,
   updateAd,
   deleteAd,
+  updateAdStatus,
+  deleteAdByUser,
 };
