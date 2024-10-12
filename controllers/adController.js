@@ -11,6 +11,7 @@ const getAds = async (req, res, next) => {
       sellerType,
       sort = "desc",
       includeViews = "false",
+      saved,
       uid = "",
       period = "",
       category,
@@ -30,35 +31,37 @@ const getAds = async (req, res, next) => {
       mileageMax,
     } = req.query;
 
-    // Create the base query object
     const query = {};
 
-    // Filter by user ID if provided
     if (uid) query.uid = uid;
 
-    // Filter by seller type (professional or individual)
     if (sellerType) {
       pro = [];
       if (sellerType.includes("Pro")) pro.push(true);
       if (sellerType.includes("Particulier")) pro.push(false);
       query.pro = pro;
     }
+    if (saved) {
+      const user = await User.findById(saved);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      query._id = { $in: user.saved_ads };
+    }
 
-    // Filter by date period
     if (period) {
       const now = new Date();
       let startDate;
       if (period == 1) {
-        startDate = new Date(now.getTime() - 24 * 60 * 60 * 1000); // Last 24 hours
+        startDate = new Date(now.getTime() - 24 * 60 * 60 * 1000);
       } else if (period == 7) {
-        startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000); // Last week
+        startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
       } else if (period == 30) {
-        startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000); // Last month
+        startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
       }
       query.createdAt = { $gte: startDate };
     }
 
-    // Add other filters based on the ad model fields
     if (brand) query.brand = { $in: brand };
     if (model) query.model = { $in: model };
     if (category) query.category = { $in: category };
@@ -74,23 +77,21 @@ const getAds = async (req, res, next) => {
     if (mileageMin || mileageMax)
       query.mileage = { $gte: mileageMin, $lte: mileageMax };
 
-    // Determine sorting based on the sort query parameter
     let sortOption = {};
     if (sort === "asc") {
-      sortOption = { createdAt: 1 }; // Sort by date ascending
+      sortOption = { createdAt: 1 };
     } else if (sort === "desc") {
-      sortOption = { createdAt: -1 }; // Sort by date descending
+      sortOption = { createdAt: -1 };
     } else if (sort === "price-asc") {
-      sortOption = { price: 1 }; // Sort by price ascending
+      sortOption = { price: 1 };
     } else if (sort === "price-desc") {
-      sortOption = { price: -1 }; // Sort by price descending
+      sortOption = { price: -1 };
     }
 
     if (includeViews !== "true") {
       query.active = true;
     }
 
-    // Fetch ads with the constructed query and sorting options
     const adsQuery = Ad.find(query)
       .sort(sortOption)
       .skip(size * (page - 1))
@@ -98,7 +99,6 @@ const getAds = async (req, res, next) => {
 
     let ads = [];
 
-    // Include views if requested
     if (includeViews === "true") {
       const adsQueryWithUser = adsQuery.populate({
         path: "uid",
@@ -122,7 +122,6 @@ const getAds = async (req, res, next) => {
       ads = await adsQuery;
     }
 
-    // Count total ads based on the filters
     const count = await Ad.countDocuments(query);
     res.status(200).json({ ads, count });
   } catch (error) {
@@ -155,7 +154,6 @@ const getAdById = async (req, res, next) => {
         adId: id,
         userId,
         viewerAgent,
-        // location
       });
 
       await newView.save();
@@ -178,7 +176,7 @@ const getAdById = async (req, res, next) => {
 
 const getAdsByIds = async (req, res, next) => {
   try {
-    const { adsId } = req.query; // Retrieve comma-separated ad IDs from query params
+    const { adsId } = req.query;
 
     if (!adsId) {
       return res.status(400).json({ message: "No ad IDs provided" });
@@ -334,6 +332,38 @@ const deleteAdByUser = async (req, res, next) => {
   }
 };
 
+const getUserSavedAds = async (req, res, next) => {
+  try {
+    const { uid } = req.params;
+
+    const user = await User.findById(uid);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.status(200).json(user.saved_ads);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const updateSavedAds = async (req, res, next) => {
+  try {
+    const { uid } = req.params;
+    const savedAds = req.body;
+    const user = await User.findById(uid);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    user.saved_ads = savedAds;
+    const updatedUser = await User.findByIdAndUpdate(uid, user, { new: true });
+
+    res.status(200).json(updatedUser.saved_ads);
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getAds,
   getAdById,
@@ -344,4 +374,6 @@ module.exports = {
   deleteAd,
   updateAdStatus,
   deleteAdByUser,
+  getUserSavedAds,
+  updateSavedAds,
 };

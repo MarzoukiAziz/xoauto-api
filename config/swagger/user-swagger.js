@@ -5,7 +5,7 @@
  *     User:
  *       type: object
  *       properties:
- *         _id:
+ *          _id:
  *           type: string
  *           description: The unique identifier for the user
  *           example: "60f6ad2d4f1a2b6c88fa54e5"
@@ -33,9 +33,9 @@
  *           type: boolean
  *           description: Whether the user has a professional account
  *           example: true
- *         favoris:
+ *         saved_ads:
  *           type: array
- *           description: A list of favorite item IDs
+ *           description: A list of saved item IDs
  *           items:
  *             type: string
  *           example: ["60f6ad2d4f1a2b6c88fa54e5", "60f6ad2d4f1a2b6c88fa54e6"]
