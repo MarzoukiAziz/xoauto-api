@@ -43,6 +43,9 @@ const getSettings = async (req, res, next) => {
 const getNewSettingsWithBrands = async (req, res, next) => {
   try {
     const newSettings = await NewSettings.findOne();
+    const categories = await Category.find().sort({ name_fr: 1 });
+    const energies = await Energy.find().sort({ name_fr: 1 });
+
     if (!newSettings) {
       return res.status(404).json({ message: "No settings found" });
     }
@@ -50,7 +53,7 @@ const getNewSettingsWithBrands = async (req, res, next) => {
       _id: { $in: newSettings.brands },
     }).sort({ name: 1 });
 
-    res.status(200).json({ brands: availableBrands });
+    res.status(200).json({ brands: availableBrands, categories, energies });
   } catch (error) {
     next(error);
   }
