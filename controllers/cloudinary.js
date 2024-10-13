@@ -12,7 +12,6 @@ const createSignture = (req, res) => {
     {
       timestamp: timestamp,
       folder: "avatars",
-      public_id: req.params.id,
     },
     cloudinary.config().api_secret
   );
