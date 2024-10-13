@@ -15,12 +15,7 @@ router.get(
   verifyUserRoles(ROLES_LIST.ADMIN),
   getAllUsers
 );
-router.get(
-  "/cid/:cid",
-  verifyUserToken,
-  verifyUserRoles(ROLES_LIST.ADMIN, ROLES_LIST.USER),
-  getUserIdByCognitoId
-);
+router.get("/cid/:cid", verifyUserToken, getUserIdByCognitoId);
 router.get(
   "/:id",
   verifyUserToken,

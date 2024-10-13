@@ -11,6 +11,6 @@ const router = express.Router();
 router.get("/adpics", createSigntureGallerie);
 router.get("/adVids", createSigntureVideo);
 
-router.get("/:id", createSignture);
+router.get("/", createSignture);
 
 module.exports = router;
