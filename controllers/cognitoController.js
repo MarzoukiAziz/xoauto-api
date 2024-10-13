@@ -3,10 +3,15 @@ const request = require("request");
 const jwkToPem = require("jwk-to-pem");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
-const ROLES_LIST = require("../utils/rolesList");
-const AWS = require("aws-sdk");
+// Importing the Cognito client from AWS SDK v3
+const {
+  CognitoIdentityProviderClient,
+  AdminAddUserToGroupCommand,
+  AdminDisableUserCommand,
+  AdminEnableUserCommand,
+} = require("@aws-sdk/client-cognito-identity-provider");
 
-//Set user pool credentials.
+// Set user pool credentials.
 const poolData = {
   UserPoolId: process.env.AWS_USER_POOL_ID,
   ClientId: process.env.AWS_CLIENT_ID,
@@ -70,7 +75,7 @@ const logIn = async (req, res, next) => {
   }
 };
 
-//Verify token.
+// Verify token.
 const verifyToken = async (req, res, next) => {
   try {
     if (req.query.accessToken) {
@@ -131,7 +136,7 @@ const verifyToken = async (req, res, next) => {
   }
 };
 
-//Download jwsk.
+// Download JWKS.
 const downloadJwk = (token) => {
   const urlJwk = `https://cognito-idp.${aws_region}.amazonaws.com/${poolData.UserPoolId}/.well-known/jwks.json`;
   return new Promise((resolve, reject) => {
@@ -145,7 +150,7 @@ const downloadJwk = (token) => {
   });
 };
 
-//Very the registration code.
+// Verify the registration code.
 const verifyregistrationCode = async (req, res, next) => {
   const { body } = req;
 
@@ -177,7 +182,7 @@ const verifyregistrationCode = async (req, res, next) => {
   }
 };
 
-//Register a new user, and return the data in a promise.
+// Register a new user, and return the data in a promise.
 const signUp = async (req, res, next) => {
   let { email, username, phone, password } = req.body;
   try {
@@ -216,25 +221,27 @@ const signUp = async (req, res, next) => {
         // Save the new user to the database
         await newUser.save();
 
-        // Add the new user to the Cognito group
-        const cognito = new AWS.CognitoIdentityServiceProvider();
+        // Add the new user to the Cognito group using v3 client
+        const client = new CognitoIdentityProviderClient({
+          region: aws_region,
+        });
         const params = {
           GroupName: "USER",
           UserPoolId: userPool.userPoolId,
           Username: email,
         };
 
-        cognito.adminAddUserToGroup(params, (err, data) => {
-          if (err) {
-            console.log("Error adding user to group:", err);
-            return res.status(400).json({ error: err });
-          }
-
+        const command = new AdminAddUserToGroupCommand(params);
+        try {
+          await client.send(command);
           const response = {
             success: true,
           };
           res.status(200).json({ result: response });
-        });
+        } catch (err) {
+          console.log("Error adding user to group:", err);
+          return res.status(400).json({ error: err });
+        }
       }
     });
   } catch (err) {
@@ -255,62 +262,57 @@ const signUpStep2 = async (req, res, next) => {
 
     await newUser.save();
 
-    // Add the new user to the Cognito group
-    const cognito = new AWS.CognitoIdentityServiceProvider();
+    // Add the new user to the Cognito group using v3 client
+    const client = new CognitoIdentityProviderClient({ region: aws_region });
     const params = {
       GroupName: "USER",
       UserPoolId: userPool.userPoolId,
       Username: email,
     };
 
-    cognito.adminAddUserToGroup(params, (err, data) => {
-      if (err) {
-        console.log("Error adding user to group:", err);
-        return res.status(400).json({ error: err });
-      }
+    const command = new AdminAddUserToGroupCommand(params);
+    await client.send(command);
 
-      const response = {
-        success: true,
-      };
-      res.status(200).json({ result: response });
-    });
+    return res.status(200).json({ success: true });
   } catch (err) {
     res.status(400).json({ error: err });
   }
 };
 
+// Disable or Enable user based on the action
 const changeUserAccess = async (req, res, next) => {
+  const { username, action } = req.body;
+  const client = new CognitoIdentityProviderClient({ region: aws_region });
+
+  // Prepare parameters for enabling/disabling user
+  const params = {
+    UserPoolId: poolData.UserPoolId,
+    Username: username,
+  };
+
   try {
-    let { username, action } = req.body;
-    const params = {
-      UserPoolId: poolData.UserPoolId,
-      Username: username,
-    };
-    const cognito = new AWS.CognitoIdentityServiceProvider();
-    if (action == "disable") {
-      cognito.adminDisableUser(params, (err, data) => {
-        if (err) {
-          return res
-            .status(404)
-            .json({ message: "Error disabling user: " + err });
-        } else {
-          res.status(200).json("User disabled successfully");
-        }
-      });
+    if (action === "disable") {
+      const command = new AdminDisableUserCommand(params);
+      await client.send(command);
+      return res
+        .status(200)
+        .json({ message: `User ${username} disabled successfully` });
+    } else if (action === "enable") {
+      const command = new AdminEnableUserCommand(params);
+      await client.send(command);
+      return res
+        .status(200)
+        .json({ message: `User ${username} enabled successfully` });
     } else {
-      cognito.adminEnableUser(params, (err, data) => {
-        if (err) {
-          return res
-            .status(404)
-            .json({ message: "Error enabling user: " + err });
-        } else {
-          res.status(200).json("User enabled successfully");
-        }
-      });
+      return res
+        .status(400)
+        .json({ error: "Invalid action. Use 'enable' or 'disable'." });
     }
   } catch (error) {
-    console.log(error);
-    next(error);
+    console.error(error);
+    return res
+      .status(500)
+      .json({ error: `Error changing user access: ${error.message}` });
   }
 };
 
