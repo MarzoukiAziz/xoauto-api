@@ -97,13 +97,32 @@ const getUserIdByCognitoId = async (req, res, next) => {
     const user = await User.findOne({ id: cid });
 
     if (!user) {
-      res.status(404).json({ error: "User not found" });
+      // Redirect case
+      const params = {
+        UserPoolId: process.env.AWS_USER_POOL_ID,
+        Username: cid,
+      };
+      const userCognitoInfo = await cognito.adminGetUser(params).promise();
+      const userAttributes = userCognitoInfo.UserAttributes.reduce(
+        (acc, attribute) => {
+          acc[attribute.Name] = attribute.Value;
+          return acc;
+        },
+        {}
+      );
+      res.status(302).json({
+        redirectTo: "/complete-profile",
+        data: {
+          email: userAttributes.email,
+          id: userAttributes.sub,
+        },
+      });
     } else {
       res.status(200).json({ id: user._id });
     }
   } catch (error) {
     if (error.code === "UserNotFoundException") {
-      res.status(404).json({ error: "User not found" });
+      res.status(302).json({ redirectTo: "/complete-profile" });
     } else {
       next(error);
     }

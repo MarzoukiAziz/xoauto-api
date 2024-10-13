@@ -242,6 +242,43 @@ const signUp = async (req, res, next) => {
   }
 };
 
+const signUpStep2 = async (req, res, next) => {
+  let { email, username, avatar, cid } = req.body;
+  try {
+    // Create a new user in the database
+    const newUser = new User({
+      id: cid,
+      name: username,
+      email,
+      avatar,
+    });
+
+    await newUser.save();
+
+    // Add the new user to the Cognito group
+    const cognito = new AWS.CognitoIdentityServiceProvider();
+    const params = {
+      GroupName: "USER",
+      UserPoolId: userPool.userPoolId,
+      Username: email,
+    };
+
+    cognito.adminAddUserToGroup(params, (err, data) => {
+      if (err) {
+        console.log("Error adding user to group:", err);
+        return res.status(400).json({ error: err });
+      }
+
+      const response = {
+        success: true,
+      };
+      res.status(200).json({ result: response });
+    });
+  } catch (err) {
+    res.status(400).json({ error: err });
+  }
+};
+
 const changeUserAccess = async (req, res, next) => {
   try {
     let { username, action } = req.body;
@@ -282,5 +319,6 @@ module.exports = {
   signUp,
   logIn,
   verifyToken,
+  signUpStep2,
   changeUserAccess,
 };
