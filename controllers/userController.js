@@ -1,11 +1,14 @@
 const User = require("../models/User");
-const AWS = require("aws-sdk");
+const {
+  CognitoIdentityProviderClient,
+  AdminGetUserCommand,
+  AdminListGroupsForUserCommand,
+} = require("@aws-sdk/client-cognito-identity-provider");
 
-AWS.config.update({
+// Configure the Cognito client
+const cognitoClient = new CognitoIdentityProviderClient({
   region: process.env.AWS_REGION,
 });
-
-const cognito = new AWS.CognitoIdentityServiceProvider();
 
 // Get All Users
 const getAllUsers = async (req, res, next) => {
@@ -56,7 +59,9 @@ const getUserByUid = async (req, res, next) => {
         UserPoolId: process.env.AWS_USER_POOL_ID,
         Username: user.id,
       };
-      const userCognitoInfo = await cognito.adminGetUser(params).promise();
+      const userCognitoInfo = await cognitoClient.send(
+        new AdminGetUserCommand(params)
+      );
       const userAttributes = userCognitoInfo.UserAttributes.reduce(
         (acc, attribute) => {
           acc[attribute.Name] = attribute.Value;
@@ -64,9 +69,9 @@ const getUserByUid = async (req, res, next) => {
         },
         {}
       );
-      const userGroupsResponse = await cognito
-        .adminListGroupsForUser(params)
-        .promise();
+      const userGroupsResponse = await cognitoClient.send(
+        new AdminListGroupsForUserCommand(params)
+      );
       const userGroups = userGroupsResponse.Groups.map(
         (group) => group.GroupName
       );
@@ -81,7 +86,7 @@ const getUserByUid = async (req, res, next) => {
       });
     }
   } catch (error) {
-    if (error.code === "UserNotFoundException") {
+    if (error.name === "UserNotFoundException") {
       res.status(404).json({ error: "User not found" });
     } else {
       next(error);
@@ -89,7 +94,7 @@ const getUserByUid = async (req, res, next) => {
   }
 };
 
-// Get User By Id
+// Get User By Cognito Id
 const getUserIdByCognitoId = async (req, res, next) => {
   const { cid } = req.params;
 
@@ -102,7 +107,9 @@ const getUserIdByCognitoId = async (req, res, next) => {
         UserPoolId: process.env.AWS_USER_POOL_ID,
         Username: cid,
       };
-      const userCognitoInfo = await cognito.adminGetUser(params).promise();
+      const userCognitoInfo = await cognitoClient.send(
+        new AdminGetUserCommand(params)
+      );
       const userAttributes = userCognitoInfo.UserAttributes.reduce(
         (acc, attribute) => {
           acc[attribute.Name] = attribute.Value;
@@ -121,7 +128,7 @@ const getUserIdByCognitoId = async (req, res, next) => {
       res.status(200).json({ id: user._id });
     }
   } catch (error) {
-    if (error.code === "UserNotFoundException") {
+    if (error.name === "UserNotFoundException") {
       res.status(302).json({ redirectTo: "/complete-profile" });
     } else {
       next(error);
