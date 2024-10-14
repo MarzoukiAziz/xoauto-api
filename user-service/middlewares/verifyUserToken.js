@@ -1,5 +1,6 @@
 const CognitoExpress = require("cognito-express");
 const jwt = require("jsonwebtoken"); // Import the jsonwebtoken library
+const ErrorResponse = require("../utils/errorResponse");
 
 const cognitoExpress = new CognitoExpress({
   region: process.env.AWS_REGION,

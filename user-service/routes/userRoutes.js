@@ -8,6 +8,7 @@ const {
   getUserByUid,
   getUserIdByCognitoId,
   getUserSavedAds,
+  getUserSavedAdsCount,
   getUserStats,
   updateSavedAds,
 } = require("../controllers/userController");
@@ -26,6 +27,14 @@ router.get(
 );
 
 router.get("/cid/:cid", verifyUserToken, getUserIdByCognitoId);
+
+router.get(
+  "/saved/:uid",
+  // verifyUserToken,
+  // verifyUserRoles(ROLES_LIST.USER),
+  getUserSavedAds
+);
+
 router.get(
   "/:id",
   verifyUserToken,
@@ -33,12 +42,7 @@ router.get(
   getUserByUid
 );
 
-router.get(
-  "/saved/:uid",
-  verifyUserToken,
-  verifyUserRoles(ROLES_LIST.USER),
-  getUserSavedAds
-);
+router.get("/saved-count/:uid", getUserSavedAdsCount);
 
 router.put(
   "/saved/:uid",

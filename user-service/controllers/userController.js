@@ -1,3 +1,4 @@
+const { getUserAdsCount } = require("../../communicator");
 const User = require("../models/User");
 const {
   CognitoIdentityProviderClient,
@@ -151,6 +152,20 @@ const getUserSavedAds = async (req, res, next) => {
     next(error);
   }
 };
+
+const getUserSavedAdsCount = async (req, res, next) => {
+  try {
+    const { uid } = req.params;
+
+    const user = await User.findById(uid);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.status(200).json(user.saved_ads.length);
+  } catch (error) {
+    next(error);
+  }
+};
 const getStartOfLast30Days = () => {
   const today = new Date();
   return new Date(today.setDate(today.getDate() - 30));
@@ -198,6 +213,7 @@ module.exports = {
   getUserByUid,
   getUserIdByCognitoId,
   getUserSavedAds,
+  getUserSavedAdsCount,
   getUserStats,
   updateSavedAds,
 };

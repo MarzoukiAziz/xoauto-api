@@ -27,7 +27,7 @@ const getDashboardHighlights = async (req, res, next) => {
 const getUserHighlights = async (req, res, next) => {
   const { uid } = req.query;
   try {
-    const savedCount = await communicator.getSavedAds(uid);
+    const savedCount = await communicator.getSavedAdsCount(uid);
     const adsCount = await communicator.getUserAdsCount(uid);
 
     res.status(200).json({
