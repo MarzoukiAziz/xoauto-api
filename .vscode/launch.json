@@ -1,0 +1,56 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Ad Service",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/ad-service/server.js", // Adjust the path to the entry point of your project
+      "cwd": "${workspaceFolder}/ad-service", // Set the current working directory
+      "runtimeExecutable": "nodemon", // Use nodemon if needed
+      "restart": true, // Auto-restart on file changes
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Blog Service",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/blog-service/server.js", // Adjust the path
+      "cwd": "${workspaceFolder}/blog-service",
+      "runtimeExecutable": "nodemon",
+      "restart": true,
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "New Ad Service",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/new-ad-service/server.js",
+      "cwd": "${workspaceFolder}/new-ad-service",
+      "runtimeExecutable": "nodemon",
+      "restart": true,
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "User Service",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/user-service/server.js",
+      "cwd": "${workspaceFolder}/user-service",
+      "runtimeExecutable": "nodemon",
+      "restart": true,
+      "console": "integratedTerminal"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Launch All Projects",
+      "configurations": [
+        "Ad Service",
+        "Blog Service",
+        "New Ad Service",
+        "User Service"
+      ]
+    }
+  ]
+}

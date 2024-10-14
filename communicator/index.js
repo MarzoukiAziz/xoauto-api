@@ -31,7 +31,6 @@ class Communicator {
     const response = await this.adServiceClient.get("/ads/stats");
     return response.data;
   }
-
   async getUserAdsCount(uid) {
     const response = await this.adServiceClient.get(
       "/ads/user-ads-count/" + uid
@@ -47,7 +46,6 @@ class Communicator {
     const response = await this.adServiceClient.get("/settings/categories");
     return response.data;
   }
-
   async getEnergies() {
     const response = await this.adServiceClient.get("/settings/energies");
     return response.data;
