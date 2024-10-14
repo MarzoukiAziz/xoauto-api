@@ -18,6 +18,13 @@ router.get(
   verifyUserRoles(ROLES_LIST.ADMIN),
   getAllUsers
 );
+router.get(
+  "/stats",
+  verifyUserToken,
+  verifyUserRoles(ROLES_LIST.ADMIN),
+  getUserStats
+);
+
 router.get("/cid/:cid", verifyUserToken, getUserIdByCognitoId);
 router.get(
   "/:id",
@@ -31,13 +38,6 @@ router.get(
   verifyUserToken,
   verifyUserRoles(ROLES_LIST.USER),
   getUserSavedAds
-);
-
-router.get(
-  "/stats",
-  verifyUserToken,
-  verifyUserRoles(ROLES_LIST.ADMIN),
-  getUserStats
 );
 
 router.put(
