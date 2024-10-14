@@ -1,20 +1,24 @@
 const NewSettings = require("../models/NewSettings");
+const communicator = require("../../communicator");
 
 const getNewSettingsWithBrands = async (req, res, next) => {
-  // try {
-  //   const newSettings = await NewSettings.findOne();
-  //   const categories = await Category.find().sort({ name_fr: 1 });
-  //   const energies = await Energy.find().sort({ name_fr: 1 });
-  //   if (!newSettings) {
-  //     return res.status(404).json({ message: "No settings found" });
-  //   }
-  //   const availableBrands = await Brand.find({
-  //     _id: { $in: newSettings.brands },
-  //   }).sort({ name: 1 });
-  //   res.status(200).json({ brands: availableBrands, categories, energies });
-  // } catch (error) {
-  //   next(error);
-  // }
+  try {
+    const newSettings = await NewSettings.findOne();
+    const categories = await communicator.getCategories();
+    const energies = await communicator.getEnergies();
+
+    if (!newSettings) {
+      return res.status(404).json({ message: "No settings found" });
+    }
+    const brands = await communicator.getBrands();
+    const availableBrands = brands.filter((brand) =>
+      newSettings.brands.includes(brand._id)
+    );
+
+    res.status(200).json({ brands: availableBrands, categories, energies });
+  } catch (error) {
+    next(error);
+  }
 };
 
 const getNewSettings = async (req, res, next) => {

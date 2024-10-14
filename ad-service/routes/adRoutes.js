@@ -3,6 +3,8 @@ const {
   getAds,
   getAdById,
   getAdsByIds,
+  getStats,
+  getUserAdsCount,
   createAd,
   updateAd,
   deleteAd,
@@ -19,6 +21,8 @@ const router = express.Router();
 router.get("/search", getAds);
 router.get("/selected", getAdsByIds);
 router.get("/similars", getSimilars);
+router.get("/stats", getStats);
+router.get("/user-ads-count/:uid", getUserAdsCount);
 router.get("/:id", getAdById);
 router.put(
   "/change-status/:id",

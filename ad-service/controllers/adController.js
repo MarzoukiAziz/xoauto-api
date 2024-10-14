@@ -1,6 +1,7 @@
 const Ad = require("../models/Ad");
 const AdView = require("../models/AdView");
 const mongoose = require("mongoose");
+const communicator = require("../../communicator");
 
 const getAds = async (req, res, next) => {
   try {
@@ -41,12 +42,8 @@ const getAds = async (req, res, next) => {
       query.pro = pro;
     }
     if (saved) {
-      //TODO:
-      // const user = await User.findById(saved);
-      // if (!user) {
-      //   return res.status(404).json({ message: "User not found" });
-      // }
-      // query._id = { $in: user.saved_ads };
+      const saved_ads = await communicator.getSavedAds(saved);
+      query._id = { $in: saved_ads };
     }
 
     if (period) {
@@ -228,6 +225,39 @@ const getSimilars = async (req, res, next) => {
   }
 };
 
+const getStats = async (req, res, next) => {
+  try {
+    const startOfLast30Days = getStartOfLast30Days();
+    // New ads in the last 30 days
+    const newAdsLast30Days = await Ad.countDocuments({
+      createdAt: { $gte: startOfLast30Days },
+    });
+
+    // Views on ads in the last 30 days
+    const adViewsLast30Days = await AdView.aggregate([
+      { $match: { viewedAt: { $gte: startOfLast30Days } } },
+      { $group: { _id: null, totalViews: { $sum: 1 } } }, // Counting each view as 1
+    ]);
+
+    res.status(200).send({ newAdsLast30Days, adViewsLast30Days });
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+};
+const getUserAdsCount = async (req, res, next) => {
+  try {
+    const { uid } = req.params;
+
+    const adsCount = await Ad.countDocuments({
+      uid: { $eq: uid },
+    });
+
+    res.status(200).json(adsCount);
+  } catch (error) {
+    next(error);
+  }
+};
+
 const createAd = async (req, res, next) => {
   try {
     const ad = new Ad(req.body);
@@ -334,6 +364,8 @@ module.exports = {
   getAdById,
   getAdsByIds,
   getSimilars,
+  getStats,
+  getUserAdsCount,
   createAd,
   updateAd,
   deleteAd,

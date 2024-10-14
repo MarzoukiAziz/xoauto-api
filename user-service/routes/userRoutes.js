@@ -8,6 +8,7 @@ const {
   getUserByUid,
   getUserIdByCognitoId,
   getUserSavedAds,
+  getUserStats,
   updateSavedAds,
 } = require("../controllers/userController");
 
@@ -30,6 +31,13 @@ router.get(
   verifyUserToken,
   verifyUserRoles(ROLES_LIST.USER),
   getUserSavedAds
+);
+
+router.get(
+  "/stats",
+  verifyUserToken,
+  verifyUserRoles(ROLES_LIST.ADMIN),
+  getUserStats
 );
 
 router.put(

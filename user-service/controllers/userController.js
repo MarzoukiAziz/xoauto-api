@@ -151,6 +151,29 @@ const getUserSavedAds = async (req, res, next) => {
     next(error);
   }
 };
+const getUserStats = async (req, res, next) => {
+  try {
+    const getStartOfLast30Days = () => {
+      const today = new Date();
+      return new Date(today.setDate(today.getDate() - 30));
+    };
+
+    const startOfLast30Days = getStartOfLast30Days();
+    // New users
+    const newUsers = await User.countDocuments({
+      createdAt: { $gte: startOfLast30Days },
+    });
+
+    // Active users in the last 30 days
+    const activeUsersLast30Days = await User.countDocuments({
+      lastLogin: { $gte: startOfLast30Days },
+    });
+
+    res.status(200).json(newUsers, activeUsersLast30Days);
+  } catch (error) {
+    next(error);
+  }
+};
 
 const updateSavedAds = async (req, res, next) => {
   try {
@@ -175,5 +198,6 @@ module.exports = {
   getUserByUid,
   getUserIdByCognitoId,
   getUserSavedAds,
+  getUserStats,
   updateSavedAds,
 };
