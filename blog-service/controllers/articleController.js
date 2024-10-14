@@ -1,82 +1,38 @@
-const Article = require("../models/Article");
-const Comment = require("../models/Comment");
+const {
+  fetchAllArticles,
+  fetchStats,
+  fetchArticleById,
+  addArticle,
+  editArticle,
+  removeArticle,
+} = require("../services/articleService");
 
 // Get all articles
 const getAllArticles = async (req, res, next) => {
   try {
     const { category, keywords, size, page, sort } = req.query;
-    let query = {};
-    if (category && keywords) {
-      query = {
-        category: category,
-        $or: [
-          { title: { $regex: keywords, $options: "i" } },
-          { content: { $regex: keywords, $options: "i" } },
-        ],
-      };
-    } else if (category) {
-      query = { category: category };
-    } else if (keywords) {
-      query = {
-        $or: [
-          { title: { $regex: keywords, $options: "i" } },
-          { content: { $regex: keywords, $options: "i" } },
-        ],
-      };
-    }
-
-    const articles = await Article.find(query)
-      .sort({ createdAt: sort == "asc" ? 1 : -1 }) // Sort by most recent (descending order)
-      .skip(size * (page - 1))
-      .limit(size);
-    const count = await Article.countDocuments(query);
-
-    const articlesWithComments = await Promise.all(
-      articles.map(async (article) => {
-        const commentCount = await Comment.countDocuments({
-          articleId: article._id,
-        });
-        return {
-          ...article.toObject(),
-          commentCount: commentCount,
-        };
-      })
+    const { articles, count } = await fetchAllArticles(
+      category,
+      keywords,
+      size,
+      page,
+      sort
     );
 
     res.status(200).json({
-      articles: articlesWithComments,
-      count: count,
+      articles,
+      count,
     });
   } catch (error) {
     next(error);
   }
 };
 
-const getStartOfLast30Days = () => {
-  const today = new Date();
-  return new Date(today.setDate(today.getDate() - 30));
-};
-
+// Get stats
 const getStats = async (req, res, next) => {
   try {
-    const startOfLast30Days = getStartOfLast30Days();
-
-    // New articles in the last 30 days
-    const newArticlesLast30Days = await Article.countDocuments({
-      createdAt: { $gte: startOfLast30Days },
-    });
-
-    // Views on articles in the last 30 days
-    const articlesViewsLast30Days = await Article.aggregate([
-      { $match: { createdAt: { $gte: startOfLast30Days } } },
-      { $group: { _id: null, totalViews: { $sum: "$views" } } },
-    ]);
-    let articleViewsLast30Days = 0;
-
-    if (articlesViewsLast30Days) {
-      articleViewsLast30Days = articlesViewsLast30Days[0].totalViews;
-    }
-    res.status(200).send({ newArticlesLast30Days, articleViewsLast30Days });
+    const stats = await fetchStats();
+    res.status(200).send(stats);
   } catch (error) {
     res.status(400).send(error.message);
   }
@@ -87,37 +43,34 @@ const getArticleById = async (req, res, next) => {
   try {
     const { id } = req.params;
     const { view } = req.query;
-    const article = await Article.findById(id).exec();
-    if (view == "true") {
-      article.views = article.views + 1;
-      await article.save();
-    }
+    const article = await fetchArticleById(id, view);
+
     if (!article) {
       return res.status(404).json({
         message: "Article not found",
       });
     }
+
     res.status(200).json(article);
   } catch (error) {
     next(error);
   }
 };
+
 // Create a new article
 const createArticle = async (req, res, next) => {
   try {
-    const article = new Article(req.body);
-    await article.save();
+    const article = await addArticle(req.body);
     res.status(201).json(article);
   } catch (error) {
     next(error);
   }
 };
+
 // Update an article by ID
 const updateArticle = async (req, res, next) => {
   try {
-    const article = await Article.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-    });
+    const article = await editArticle(req.params.id, req.body);
     if (!article) {
       return res.status(404).json({ error: "Article not found" });
     }
@@ -126,10 +79,11 @@ const updateArticle = async (req, res, next) => {
     next(error);
   }
 };
+
 // Delete an article by ID
 const deleteArticle = async (req, res, next) => {
   try {
-    const article = await Article.findByIdAndDelete(req.params.id);
+    const article = await removeArticle(req.params.id);
     if (!article) {
       return res.status(404).json({ error: "Article not found" });
     }
