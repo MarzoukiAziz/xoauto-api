@@ -67,11 +67,15 @@ const getStats = async (req, res, next) => {
     });
 
     // Views on articles in the last 30 days
-    const articleViewsLast30Days = await Article.aggregate([
+    const articlesViewsLast30Days = await Article.aggregate([
       { $match: { createdAt: { $gte: startOfLast30Days } } },
       { $group: { _id: null, totalViews: { $sum: "$views" } } },
     ]);
+    let articleViewsLast30Days = 0;
 
+    if (articlesViewsLast30Days) {
+      articleViewsLast30Days = articlesViewsLast30Days[0].totalViews;
+    }
     res.status(200).send({ newArticlesLast30Days, articleViewsLast30Days });
   } catch (error) {
     res.status(400).send(error.message);
