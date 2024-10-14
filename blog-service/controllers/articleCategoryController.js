@@ -1,20 +1,24 @@
-const ArticleCategory = require("../models/ArticleCategory");
+const {
+  fetchAllCategories,
+  fetchCategoryNames,
+  addCategory,
+  removeCategoryById,
+} = require("../services/articleCategoryService");
 
 // Get all categories
 const getCategories = async (req, res, next) => {
   try {
-    const categories = await ArticleCategory.find();
+    const categories = await fetchAllCategories();
     res.status(200).json(categories);
   } catch (error) {
     next(error);
   }
 };
 
-// Get all categories names
+// Get all category names
 const getCategoryNames = async (req, res, next) => {
   try {
-    const categories = await ArticleCategory.find().exec();
-    const categoryNames = categories.map((category) => category.name);
+    const categoryNames = await fetchCategoryNames();
     res.status(200).json(categoryNames);
   } catch (error) {
     next(error);
@@ -24,8 +28,7 @@ const getCategoryNames = async (req, res, next) => {
 // Create a new category
 const createCategory = async (req, res, next) => {
   try {
-    const category = new ArticleCategory(req.body);
-    await category.save();
+    const category = await addCategory(req.body);
     res.status(201).json(category);
   } catch (error) {
     next(error);
@@ -35,14 +38,13 @@ const createCategory = async (req, res, next) => {
 // Delete a category by ID
 const deleteCategory = async (req, res, next) => {
   const { id } = req.params;
-
   try {
-    const deletedCategory = await ArticleCategory.findByIdAndRemove(id);
-    if (!deletedCategory) {
-      return res.status(404).json({ message: "Category not found" });
-    }
+    const deletedCategory = await removeCategoryById(id);
     res.status(200).json(deletedCategory);
   } catch (error) {
+    if (error.message === "Category not found") {
+      return res.status(404).json({ message: error.message });
+    }
     next(error);
   }
 };
