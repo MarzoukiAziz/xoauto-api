@@ -4,7 +4,7 @@ const NewAdSchema = new mongoose.Schema(
   {
     price: { type: Number, required: true, min: 0 },
     brand: { type: String, required: true },
-    model: { type: String, required: true },
+    modele: { type: String, required: true },
     version: { type: String, required: false },
     category: { type: String, required: true },
     fuel_type: { type: String, required: true },

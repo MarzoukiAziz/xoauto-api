@@ -32,15 +32,15 @@ const getNewAdsByIds = async (versionsIds) => {
 };
 
 // Service to get Similar Ads
-const getSimilars = async ({ category, model, price }) => {
+const getSimilars = async ({ category, modele, price }) => {
   const minPrice = 0.7 * price;
   const maxPrice = 1.3 * price;
 
   const newNewAds = await NewAd.find({
     price: { $gte: minPrice, $lte: maxPrice },
     category,
-    model: { $ne: model },
-  }).exec();
+    modele: { $ne: modele },
+  });
 
   return groupAdsByModel(newNewAds).slice(0, 8);
 };
@@ -53,8 +53,7 @@ const createNewAd = async (adData) => {
 
 // Service to update a NewAd by ID
 const updateNewAd = async (id, updateData) => {
-  await NewAd.findByIdAndUpdate(id, updateData, { new: true });
-  return NewAd.findById(id);
+  return await NewAd.findByIdAndUpdate(id, updateData, { new: true });
 };
 
 // Service to delete a NewAd by ID
@@ -75,7 +74,7 @@ const getAdsByBrand = async (queryParams) => {
 // Helper function to build queries
 const buildQuery = ({
   brand,
-  model,
+  modele,
   category,
   fuel_type,
   seats,
@@ -86,7 +85,7 @@ const buildQuery = ({
 }) => {
   const query = {};
   if (brand) query.brand = { $in: brand };
-  if (model) query.model = { $in: model };
+  if (modele) query.modele = { $in: modele };
   if (category) query.category = { $in: category };
   if (fuel_type) query.fuel_type = { $in: fuel_type };
   if (seats) query.seats = { $in: seats };
@@ -106,7 +105,7 @@ const buildSortOption = (sort) => {
 // Helper function to group ads by model and create versions
 const groupAdsByModel = (ads) => {
   return ads.reduce((acc, ad) => {
-    const existingModel = acc.find((item) => item.model === ad.model);
+    const existingModel = acc.find((item) => item.modele === ad.modele);
     const version = {
       _id: ad._id,
       price: ad.price,
@@ -129,7 +128,7 @@ const groupAdsByModel = (ads) => {
     } else {
       acc.push({
         brand: ad.brand,
-        model: ad.model,
+        modele: ad.modele,
         versions: [version],
       });
     }
@@ -146,4 +145,5 @@ module.exports = {
   updateNewAd,
   deleteNewAd,
   getAdsByBrand,
+  groupAdsByModel,
 };
