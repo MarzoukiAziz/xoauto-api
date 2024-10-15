@@ -1,20 +1,20 @@
-const Brand = require("../../models/settings/Brand");
-const Model = require("../../models/settings/Model");
-const Color = require("../../models/settings/Color");
-const Category = require("../../models/settings/Category");
-const Energy = require("../../models/settings/Energy");
-const Region = require("../../models/settings/Region");
-const Equipment = require("../../models/settings/Equipment");
+const { getAllBrands } = require("../../services/brandService");
+const { getAllModels } = require("../../services/modelService");
+const { getAllColors } = require("../../services/colorService");
+const { getAllCategories } = require("../../services/categoryService");
+const { getAllEnergies } = require("../../services/energyService");
+const { getAllRegions } = require("../../services/regionService");
+const { getSingleEquipment } = require("../../services/equipmentService");
 
 const getSettings = async (req, res, next) => {
   try {
-    const brands = await Brand.find().sort({ name: 1 });
-    const models = await Model.find().sort({ name: 1 });
-    const colors = await Color.find().sort({ name_fr: 1 });
-    const categories = await Category.find().sort({ name_fr: 1 });
-    const energies = await Energy.find().sort({ name_fr: 1 });
-    const regions = await Region.find().sort({ name_fr: 1 });
-    const equipment = await Equipment.findOne();
+    const brands = await getAllBrands();
+    const models = await getAllModels();
+    const colors = await getAllColors();
+    const categories = await getAllCategories();
+    const energies = await getAllEnergies();
+    const regions = await getAllRegions();
+    const equipment = await getSingleEquipment();
     const settings = {
       brands,
       models,
