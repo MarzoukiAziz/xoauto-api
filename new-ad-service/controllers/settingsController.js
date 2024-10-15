@@ -1,21 +1,14 @@
-const NewSettings = require("../models/NewSettings");
-const communicator = require("../../communicator");
+const newSettingsService = require("../services/newSettingsService");
 
 const getNewSettingsWithBrands = async (req, res, next) => {
   try {
-    const newSettings = await NewSettings.findOne();
-    const categories = await communicator.getCategories();
-    const energies = await communicator.getEnergies();
+    const result = await newSettingsService.getNewSettingsWithBrands();
 
-    if (!newSettings) {
+    if (!result) {
       return res.status(404).json({ message: "No settings found" });
     }
-    const brands = await communicator.getBrands();
-    const availableBrands = brands.filter((brand) =>
-      newSettings.brands.includes(brand._id)
-    );
 
-    res.status(200).json({ brands: availableBrands, categories, energies });
+    res.status(200).json(result);
   } catch (error) {
     next(error);
   }
@@ -23,7 +16,7 @@ const getNewSettingsWithBrands = async (req, res, next) => {
 
 const getNewSettings = async (req, res, next) => {
   try {
-    const newSettings = await NewSettings.findOne();
+    const newSettings = await newSettingsService.getNewSettings();
     if (!newSettings) {
       return res.status(404).json({ message: "No settings found" });
     }
@@ -38,9 +31,9 @@ const updateNewSettings = async (req, res, next) => {
   const updateData = req.body;
 
   try {
-    const updatedSettings = await NewSettings.findOneAndUpdate({}, updateData, {
-      new: true,
-    });
+    const updatedSettings = await newSettingsService.updateNewSettings(
+      updateData
+    );
 
     if (!updatedSettings) {
       return res.status(404).json({ message: "No settings found to update" });
