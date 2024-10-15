@@ -1,32 +1,31 @@
-const Region = require("../../models/settings/Region");
+const regionService = require("../../services/regionService");
 
 // Get all Regions
 const getRegions = async (req, res, next) => {
   try {
-    const regions = await Region.find().sort({ name_fr: 1 });
+    const regions = await regionService.getAllRegions();
     res.status(200).json(regions);
   } catch (error) {
     next(error);
   }
 };
 
-// Create a new region
+// Create a new Region
 const createRegion = async (req, res, next) => {
   try {
-    const region = new Region(req.body);
-    await region.save();
+    const region = await regionService.createNewRegion(req.body);
     res.status(201).json(region);
   } catch (error) {
     next(error);
   }
 };
 
-// Delete a region by ID
+// Delete a Region by ID
 const deleteRegion = async (req, res, next) => {
   const { id } = req.params;
 
   try {
-    const deletedRegion = await Region.findByIdAndRemove(id);
+    const deletedRegion = await regionService.deleteRegionById(id);
     if (!deletedRegion) {
       return res.status(404).json({ message: "Region not found" });
     }
