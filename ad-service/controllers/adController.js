@@ -224,6 +224,10 @@ const getSimilars = async (req, res, next) => {
     res.status(400).send(error.message);
   }
 };
+const getStartOfLast30Days = () => {
+  const today = new Date();
+  return new Date(today.setDate(today.getDate() - 30));
+};
 
 const getStats = async (req, res, next) => {
   try {
@@ -234,11 +238,16 @@ const getStats = async (req, res, next) => {
     });
 
     // Views on ads in the last 30 days
-    const adViewsLast30Days = await AdView.aggregate([
+    const adsViewsLast30Days = await AdView.aggregate([
       { $match: { viewedAt: { $gte: startOfLast30Days } } },
       { $group: { _id: null, totalViews: { $sum: 1 } } }, // Counting each view as 1
     ]);
 
+    let adViewsLast30Days = 0;
+
+    if (adsViewsLast30Days) {
+      adViewsLast30Days = adsViewsLast30Days[0].totalViews;
+    }
     res.status(200).send({ newAdsLast30Days, adViewsLast30Days });
   } catch (error) {
     res.status(400).send(error.message);

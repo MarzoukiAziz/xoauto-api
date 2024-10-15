@@ -1,19 +1,9 @@
-const Comment = require("../models/Comment");
+const commentService = require("../services/commentService");
 
 // Create a new comment
 const createComment = async (req, res, next) => {
   try {
-    const comment = new Comment(req.body);
-    await comment.save();
-
-    const comments = await Comment.find({ articleId: comment.articleId })
-      .populate({
-        path: "uid",
-        select: "name avatar",
-      })
-      .sort({
-        createdAt: -1,
-      });
+    const comments = await commentService.createComment(req.body);
     res.status(201).json(comments);
   } catch (error) {
     next(error);
@@ -26,12 +16,7 @@ const updateComment = async (req, res, next) => {
   const { content } = req.body;
 
   try {
-    const updatedComment = await Comment.findByIdAndUpdate(
-      id,
-      { $set: { content } },
-      { new: true }
-    );
-
+    const updatedComment = await commentService.updateComment(id, content);
     res.status(200).json(updatedComment);
   } catch (error) {
     next(error);
@@ -43,7 +28,7 @@ const deleteComment = async (req, res, next) => {
   const { id } = req.params;
 
   try {
-    const deletedComment = await Comment.findByIdAndRemove(id);
+    const deletedComment = await commentService.deleteComment(id);
     res.status(200).json(deletedComment);
   } catch (error) {
     next(error);
@@ -55,13 +40,7 @@ const getCommentsByArticleId = async (req, res, next) => {
   const { articleId } = req.params;
 
   try {
-    const comments = await Comment.find({ articleId })
-      .populate({
-        path: "uid",
-        select: "name avatar",
-      })
-      .sort({ createdAt: -1 });
-
+    const comments = await commentService.getCommentsByArticleId(articleId);
     res.status(200).json(comments);
   } catch (error) {
     next(error);

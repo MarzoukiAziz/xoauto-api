@@ -4,10 +4,8 @@ const getDashboardHighlights = async (req, res, next) => {
   try {
     const { newUsers, activeUsersLast30Days } =
       await communicator.getUsersStats();
-
     const { newArticlesLast30Days, articleViewsLast30Days } =
       await communicator.getBlogStats();
-
     const { newAdsLast30Days, adViewsLast30Days } =
       await communicator.getAdStats();
 
@@ -15,9 +13,9 @@ const getDashboardHighlights = async (req, res, next) => {
       newUsers,
       activeUsersLast30Days,
       newArticlesLast30Days,
-      articleViewsLast30Days: articleViewsLast30Days[0]?.totalViews || 0,
+      articleViewsLast30Days,
       newAdsLast30Days,
-      adViewsLast30Days: adViewsLast30Days[0]?.totalViews || 0,
+      adViewsLast30Days,
     });
   } catch (error) {
     next(error);

@@ -21,8 +21,8 @@ router.get(
 );
 router.get(
   "/stats",
-  verifyUserToken,
-  verifyUserRoles(ROLES_LIST.ADMIN),
+  // verifyUserToken,
+  // verifyUserRoles(ROLES_LIST.ADMIN),
   getUserStats
 );
 
