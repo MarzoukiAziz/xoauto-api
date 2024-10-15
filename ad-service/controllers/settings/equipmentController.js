@@ -1,9 +1,9 @@
-const Equipment = require("../../models/settings/Equipment");
+const equipmentService = require("../../services/equipmentService");
 
 // Get the single Equipment item
 const getEquipment = async (req, res, next) => {
   try {
-    const equipment = await Equipment.findOne(); // Fetch the single equipment item
+    const equipment = await equipmentService.getSingleEquipment();
     if (!equipment) {
       return res.status(404).json({ message: "No equipment found" });
     }
@@ -18,7 +18,9 @@ const updateEquipment = async (req, res, next) => {
   const updateData = req.body; // Get the data to update from the request body
 
   try {
-    const updatedEquipment = await Equipment.findOneAndUpdate({}, updateData);
+    const updatedEquipment = await equipmentService.updateSingleEquipment(
+      updateData
+    );
 
     if (!updatedEquipment) {
       return res.status(404).json({ message: "No equipment found to update" });
