@@ -17,7 +17,7 @@ const getNewSettingsWithBrands = async () => {
     newSettings.brands.includes(brand._id)
   );
 
-  return { availableBrands, categories, energies };
+  return { brands: availableBrands, categories, energies };
 };
 
 const updateNewSettings = async (updateData) => {
