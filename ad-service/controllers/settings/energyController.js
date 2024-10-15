@@ -1,32 +1,31 @@
-const Energy = require("../../models/settings/Energy");
+const energyService = require("../../services/energyService");
 
 // Get all Energies
 const getEnergies = async (req, res, next) => {
   try {
-    const energies = await Energy.find().sort({ name_fr: 1 });
+    const energies = await energyService.getAllEnergies();
     res.status(200).json(energies);
   } catch (error) {
     next(error);
   }
 };
 
-// Create a new energy
+// Create a new Energy
 const createEnergy = async (req, res, next) => {
   try {
-    const energy = new Energy(req.body);
-    await energy.save();
+    const energy = await energyService.createNewEnergy(req.body);
     res.status(201).json(energy);
   } catch (error) {
     next(error);
   }
 };
 
-// Delete a energy by ID
+// Delete an Energy by ID
 const deleteEnergy = async (req, res, next) => {
   const { id } = req.params;
 
   try {
-    const deletedEnergy = await Energy.findByIdAndRemove(id);
+    const deletedEnergy = await energyService.deleteEnergyById(id);
     if (!deletedEnergy) {
       return res.status(404).json({ message: "Energy not found" });
     }
