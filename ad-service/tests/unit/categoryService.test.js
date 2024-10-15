@@ -1,4 +1,3 @@
-// categoryService.test.js
 const Category = require("../../models/settings/Category");
 const categoryService = require("../../services/categoryService");
 

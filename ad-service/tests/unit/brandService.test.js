@@ -1,4 +1,3 @@
-// brandService.test.js
 const Brand = require("../../models/settings/Brand");
 const brandService = require("../../services/brandService");
 
