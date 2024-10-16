@@ -11,6 +11,7 @@
   },
   "license": "ISC",
   "dependencies": {
+    "@faker-js/faker": "^9.0.3",
     "cloudinary": "^2.5.0",
     "cognito-express": "^3.0.4",
     "dotenv": "^16.4.5",

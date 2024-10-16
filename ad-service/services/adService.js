@@ -11,7 +11,7 @@ const buildQuery = ({
   saved,
   period,
   brand,
-  model,
+  car_model,
   category,
   fuel_type,
   seats,
@@ -33,7 +33,7 @@ const buildQuery = ({
   if (saved) query._id = { $in: saved };
   if (period) query.createdAt = { $gte: getStartDateForPeriod(period) };
   if (brand) query.brand = { $in: brand };
-  if (model) query.car_model = { $in: model };
+  if (car_model) query.car_model = { $in: car_model };
   if (category) query.category = { $in: category };
   if (fuel_type) query.fuel_type = { $in: fuel_type };
   if (seats) query.seats = { $in: seats };
@@ -82,13 +82,13 @@ const populateAdsWithViews = async (ads) => {
   const viewCounts = await getAllViewsByAd(adIds);
 
   const viewCountMap = viewCounts.reduce((map, { _id, viewCount }) => {
-    map[_id.toString()] = viewCount;
+    map[String(_id)] = viewCount;
     return map;
   }, {});
 
   return ads.map((ad) => ({
     ...ad.toObject(),
-    views: viewCountMap[ad._id.toString()] || 0,
+    views: viewCountMap[String(ad._id)] || 0,
   }));
 };
 
@@ -153,16 +153,16 @@ const getAdsByIds = async (adsId) => {
 const getSimilars = async (category, adId, price) => {
   const minPrice = 0.7 * price;
   const maxPrice = 1.3 * price;
-  return Ad.find({
+  const ads = await Ad.find({
     price: { $gte: minPrice, $lte: maxPrice },
     category,
     active: true,
     sold: false,
   })
     .sort({ createdAt: -1 })
-    .limit(8)
-    .exec()
-    .then((docs) => docs.filter((doc) => doc._id.toString() !== adId));
+    .limit(8);
+
+  return ads.filter((doc) => doc._id.toString() !== adId);
 };
 
 const getStats = async () => {
@@ -213,8 +213,7 @@ const updateAdStatus = async (id, uid, status) => {
   if (!ad || ad.uid != uid) return null;
 
   ad.sold = status;
-  await Ad.findByIdAndUpdate(id, ad, { new: true });
-  return Ad.findById(id).populate({
+  return await Ad.findByIdAndUpdate(id, ad, { new: true }).populate({
     path: "uid",
     select: "name email createdAt pro avatar",
   });
