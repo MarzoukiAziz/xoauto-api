@@ -33,6 +33,13 @@ const getAllAdViews = async (filters) => {
   return await AdView.find(query);
 };
 
+const getAllViewsByAd = async (adIds) => {
+  return await AdView.aggregate([
+    { $match: { adId: { $in: adIds } } },
+    { $group: { _id: "$adId", viewCount: { $sum: 1 } } },
+  ]);
+};
+
 const deleteAdView = async (id) => {
   return await AdView.findByIdAndDelete(id);
 };
@@ -42,5 +49,6 @@ module.exports = {
   getViewsByAdId,
   getViewsByUserId,
   getAllAdViews,
+  getAllViewsByAd,
   deleteAdView,
 };

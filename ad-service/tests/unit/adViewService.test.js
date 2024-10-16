@@ -50,4 +50,45 @@ describe("AdView Service", () => {
     expect(result).toEqual(mockAdViewData);
     expect(AdView.findByIdAndDelete).toHaveBeenCalled();
   });
+
+  test("getAllViewsByAd should return the correct view count for each adId", async () => {
+    const adIds = ["ad1", "ad2", "ad3"];
+
+    // Mocked return value from AdView.aggregate
+    const mockAggregateResult = [
+      { _id: "ad1", viewCount: 5 },
+      { _id: "ad2", viewCount: 3 },
+    ];
+
+    // Mock the aggregate function
+    AdView.aggregate.mockResolvedValue(mockAggregateResult);
+
+    // Call the function
+    const result = await adViewService.getAllViewsByAd(adIds);
+
+    // Assertions
+    expect(AdView.aggregate).toHaveBeenCalledWith([
+      { $match: { adId: { $in: adIds } } },
+      { $group: { _id: "$adId", viewCount: { $sum: 1 } } },
+    ]);
+
+    expect(result).toEqual(mockAggregateResult);
+  });
+
+  test("getAllViewsByAd should handle no matching ads gracefully", async () => {
+    const adIds = ["ad4", "ad5"];
+
+    // Mock no matching ads
+    AdView.aggregate.mockResolvedValue([]);
+
+    const result = await adViewService.getAllViewsByAd(adIds);
+
+    // Assertions
+    expect(AdView.aggregate).toHaveBeenCalledWith([
+      { $match: { adId: { $in: adIds } } },
+      { $group: { _id: "$adId", viewCount: { $sum: 1 } } },
+    ]);
+
+    expect(result).toEqual([]);
+  });
 });
