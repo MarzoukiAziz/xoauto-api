@@ -24,11 +24,19 @@ router.get("/similars", getSimilars);
 router.get("/stats", getStats);
 router.get("/user-ads-count/:uid", getUserAdsCount);
 router.get("/:id", getAdById);
+router.post("/", verifyUserToken, verifyUserRoles(ROLES_LIST.USER), createAd);
+
 router.put(
   "/change-status/:id",
   verifyUserToken,
   verifyUserRoles(ROLES_LIST.USER),
   updateAdStatus
+);
+router.put(
+  "/:id",
+  verifyUserToken,
+  verifyUserRoles(ROLES_LIST.ADMIN),
+  updateAd
 );
 router.delete(
   "/user/:id",
@@ -36,13 +44,7 @@ router.delete(
   verifyUserRoles(ROLES_LIST.USER),
   deleteAdByUser
 );
-router.post("/", verifyUserToken, verifyUserRoles(ROLES_LIST.USER), createAd);
-router.put(
-  "/:id",
-  verifyUserToken,
-  verifyUserRoles(ROLES_LIST.ADMIN),
-  updateAd
-);
+
 router.delete(
   "/:id",
   verifyUserToken,
