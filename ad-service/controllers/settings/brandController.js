@@ -1,20 +1,20 @@
-const Brand = require("../../models/settings/Brand");
+const brandService = require("../../services/brandService");
 
 // Get all Brands
 const getBrands = async (req, res, next) => {
   try {
-    const brands = await Brand.find().sort({ name: 1 });
+    const brands = await brandService.getAllBrands();
     res.status(200).json(brands);
   } catch (error) {
     next(error);
   }
 };
 
-// get brand by name
+// Get brand by name
 const getBrandByName = async (req, res, next) => {
   try {
     const { name } = req.params;
-    const brand = await Brand.findOne({ name: name });
+    const brand = await brandService.getBrandByName(name);
 
     if (!brand) {
       return res.status(404).json({ message: "Brand not found" });
@@ -28,8 +28,7 @@ const getBrandByName = async (req, res, next) => {
 // Create a new brand
 const createBrand = async (req, res, next) => {
   try {
-    const brand = new Brand(req.body);
-    await brand.save();
+    const brand = await brandService.createNewBrand(req.body);
     res.status(201).json(brand);
   } catch (error) {
     next(error);
@@ -41,7 +40,7 @@ const deleteBrand = async (req, res, next) => {
   const { id } = req.params;
 
   try {
-    const deletedBrand = await Brand.findByIdAndRemove(id);
+    const deletedBrand = await brandService.deleteBrandById(id);
     if (!deletedBrand) {
       return res.status(404).json({ message: "Brand not found" });
     }

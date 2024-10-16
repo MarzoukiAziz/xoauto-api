@@ -27,7 +27,7 @@ const AdSchema = new mongoose.Schema(
     description: { type: String, required: false },
     price: { type: Number, required: true, min: 0 },
     brand: { type: String, required: true },
-    model: { type: String, required: true },
+    car_model: { type: String, required: true },
     version: { type: String, required: false },
     category: { type: String, required: true },
     mileage: { type: Number, required: true, min: 0 },
