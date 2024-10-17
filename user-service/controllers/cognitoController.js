@@ -21,6 +21,7 @@ const userPool = new AmazonCognitoId.CognitoUserPool(poolData);
 // Login
 const logIn = async (req, res, next) => {
   const { email, password } = req.body;
+  const origin = req.get("origin");
 
   // Validate request format
   if (!email || !password) {
@@ -50,6 +51,14 @@ const logIn = async (req, res, next) => {
           const user = await User.findOne({ email });
           if (!user) {
             return next(new ErrorResponse(userNotFoundMessage, 404));
+          }
+
+          const idTokenPayload = result.getIdToken().decodePayload();
+          const groups = idTokenPayload["cognito:groups"] || [];
+          if (origin === process.env.BACKEND_URL && !groups.includes("ADMIN")) {
+            return res.status(403).json({
+              error: "Access denied: ADMIN group required",
+            });
           }
           // Update the last login date
           user.lastLogin = Date.now();
